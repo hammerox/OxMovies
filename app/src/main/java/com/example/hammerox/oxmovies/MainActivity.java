@@ -1,7 +1,10 @@
 package com.example.hammerox.oxmovies;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        new FetchMovieList().execute(0);
+        new FetchMovieList().execute();
     }
 
 
@@ -39,21 +42,22 @@ public class MainActivity extends AppCompatActivity {
 
         switch (id) {
             case R.id.action_refresh:
-                new FetchMovieList().execute(0);
+                new FetchMovieList().execute();
                 return true;
             case R.id.action_settings:
-
+                Intent intent = new Intent(this, SettingsActivity.class);
+                startActivity(intent);
                 return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    public class FetchMovieList extends AsyncTask<Integer, Void, String> {
+    public class FetchMovieList extends AsyncTask<Void, Void, String> {
 
-        private final String API_KEY = "[YOUR_API_KEY_HERE]";
+        private final String API_KEY = "YOUR_API_KEY_HERE";
 
         @Override
-        protected String doInBackground(Integer... params) {
+        protected String doInBackground(Void... params) {
 
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
@@ -66,7 +70,14 @@ public class MainActivity extends AppCompatActivity {
                         .appendPath("3")
                         .appendPath("movie");
 
-                switch (params[0]) {
+                SharedPreferences prefs = PreferenceManager
+                        .getDefaultSharedPreferences(getApplicationContext());
+
+                String sortOrderString = prefs.getString(
+                        getString(R.string.pref_sort_order_key),
+                        getString(R.string.pref_sort_order_default));
+                int sortOrder = Integer.valueOf(sortOrderString);
+                switch (sortOrder) {
                     case 0:
                         builder.appendPath("top_rated");
                         break;
