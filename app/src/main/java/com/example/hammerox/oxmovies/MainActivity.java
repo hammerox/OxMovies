@@ -2,15 +2,20 @@ package com.example.hammerox.oxmovies;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Point;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.JsonReader;
 import android.util.Log;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.GridView;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
@@ -25,19 +30,40 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     private final String API_KEY = "YOUR_API_KEY_HERE";
+
+    private GridView gridView = null;
+    private ImageAdapter imageAdapter = null;
+    private List<String> IDList = null;
+    private List<String> posterList = null;
+    private int width = 0;
+    private int height = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        new FetchMovieList().execute();
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        width = size.x / 2;
+        height = width * 278/185;
+
+        gridView = (GridView) findViewById(R.id.movielist_gridview);
     }
 
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        new FetchMovieList().execute();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -154,13 +180,25 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
 
+            if (IDList == null) {
+                IDList = new ArrayList<>();
+                posterList = new ArrayList<>();
+            } else {
+                IDList.clear();
+                posterList.clear();
+            }
+
             if (s != null) {
 
                 try {
                     JSONArray results = getListFromJson(s);
                     int size = results.length();
 
-                    for (int i = 0; i < 1; i++) {
+                    for (int i = 0; i < size; i++) {
+                        String movieId = results.getJSONObject(i).getString("id");
+                        Log.d("movie", movieId);
+                        IDList.add(movieId);
+
                         String moviePoster = results.getJSONObject(i).getString("poster_path");
                         Log.d("movie", moviePoster);
 
@@ -172,8 +210,11 @@ public class MainActivity extends AppCompatActivity {
                                 .appendPath("w185")
                                 .appendPath(moviePoster.replace("/", ""));
 
-                        Picasso.with(getApplicationContext()).load(builder.build());
+                        posterList.add(builder.build().toString());
                     }
+
+                    imageAdapter = new ImageAdapter();
+                    gridView.setAdapter(imageAdapter);
 
                 } catch (JSONException e) {
                     Log.e("JSONException", e.toString());
@@ -188,5 +229,47 @@ public class MainActivity extends AppCompatActivity {
         JSONObject jsonObject = new JSONObject(s);
         return jsonObject.getJSONArray("results");
     }
+
+
+   public class ImageAdapter extends BaseAdapter {
+       @Override
+       public View getView(int position, View convertView, ViewGroup parent) {
+
+           ImageView imageView;
+           if (convertView == null) {
+               imageView = new ImageView(MainActivity.this);
+               imageView.setLayoutParams(new GridView.LayoutParams(
+                       width,
+                       height));
+           } else {
+               imageView = (ImageView) convertView;
+           }
+
+            Picasso
+                    .with(MainActivity.this)
+                    .load(posterList.get(position))
+                    .fit()
+                    .centerCrop()
+                    .into(imageView);
+
+           return imageView;
+       }
+
+       @Override
+       public long getItemId(int position) {
+           return 0;
+       }
+
+       @Override
+       public Object getItem(int position) {
+           return posterList.get(position);
+       }
+
+       @Override
+       public int getCount() {
+           return posterList.size();
+       }
+   }
+
 
 }
