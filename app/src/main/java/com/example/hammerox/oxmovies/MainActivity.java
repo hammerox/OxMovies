@@ -5,6 +5,8 @@ import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -19,21 +21,39 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        new FetchMovieList().execute(0);
     }
 
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        new FetchMovieList().execute();
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_movielist, menu);
+        return super.onCreateOptionsMenu(menu);
     }
 
-    public class FetchMovieList extends AsyncTask<Void, Void, String> {
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        switch (id) {
+            case R.id.action_refresh:
+                new FetchMovieList().execute(0);
+                return true;
+            case R.id.action_settings:
+
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    public class FetchMovieList extends AsyncTask<Integer, Void, String> {
 
         private final String API_KEY = "[YOUR_API_KEY_HERE]";
 
         @Override
-        protected String doInBackground(Void... params) {
+        protected String doInBackground(Integer... params) {
 
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
@@ -46,8 +66,7 @@ public class MainActivity extends AppCompatActivity {
                         .appendPath("3")
                         .appendPath("movie");
 
-                int returnType = 0;
-                switch (returnType) {
+                switch (params[0]) {
                     case 0:
                         builder.appendPath("top_rated");
                         break;
