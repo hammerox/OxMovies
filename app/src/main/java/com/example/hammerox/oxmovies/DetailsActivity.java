@@ -167,6 +167,8 @@ public class DetailsActivity extends AppCompatActivity {
 
             } catch (JSONException e) {
                 Log.e("JSONException", e.toString());
+            } catch (NullPointerException e) {
+                Log.e("NullPointerException", e.toString());
             }
         }
     }
