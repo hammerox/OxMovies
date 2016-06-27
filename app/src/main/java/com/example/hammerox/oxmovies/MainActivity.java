@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
 
     public class FetchMovieList extends AsyncTask<Void, Void, String> {
 
-        private final String API_KEY = "YOUR_API_KEY_HERE";
+        private final String API_KEY = "[YOUR_API_KEY_HERE]";
 
         @Override
         protected String doInBackground(Void... params) {
@@ -44,9 +44,19 @@ public class MainActivity extends AppCompatActivity {
                 builder.scheme("https")
                         .authority("api.themoviedb.org")
                         .appendPath("3")
-                        .appendPath("movie")
-                        .appendPath("550")
-                        .appendQueryParameter("api_key", API_KEY);
+                        .appendPath("movie");
+
+                int returnType = 0;
+                switch (returnType) {
+                    case 0:
+                        builder.appendPath("top_rated");
+                        break;
+                    case 1:
+                        builder.appendPath("popular");
+                        break;
+                }
+
+                builder.appendQueryParameter("api_key", API_KEY);
 
                 URL url = new URL(builder.build().toString());
 
