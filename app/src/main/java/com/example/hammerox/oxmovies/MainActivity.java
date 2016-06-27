@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -49,13 +50,17 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Display display = getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        width = size.x / 2;
-        height = width * 278/185;
+        setPosterDimensions();
 
         gridView = (GridView) findViewById(R.id.movielist_gridview);
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(MainActivity.this, DetailsActivity.class);
+                intent.putExtra(Intent.EXTRA_TEXT, IDList.get(position));
+                startActivity(intent);
+            }
+        });
     }
 
 
@@ -271,5 +276,13 @@ public class MainActivity extends AppCompatActivity {
        }
    }
 
+
+    public void setPosterDimensions() {
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        width = size.x / 2;
+        height = width * 278/185;
+    }
 
 }
