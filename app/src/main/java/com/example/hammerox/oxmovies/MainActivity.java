@@ -7,9 +7,17 @@ import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.JsonReader;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
+
+import com.squareup.picasso.Picasso;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -19,6 +27,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class MainActivity extends AppCompatActivity {
+
+    private final String API_KEY = "YOUR_API_KEY_HERE";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,8 +63,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public class FetchMovieList extends AsyncTask<Void, Void, String> {
-
-        private final String API_KEY = "YOUR_API_KEY_HERE";
 
         @Override
         protected String doInBackground(Void... params) {
@@ -139,7 +147,46 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
-            return null;
+            return movieListJson;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+
+            if (s != null) {
+
+                try {
+                    JSONArray results = getListFromJson(s);
+                    int size = results.length();
+
+                    for (int i = 0; i < 1; i++) {
+                        String moviePoster = results.getJSONObject(i).getString("poster_path");
+                        Log.d("movie", moviePoster);
+
+                        Uri.Builder builder = new Uri.Builder();
+                        builder.scheme("http")
+                                .authority("image.tmdb.org")
+                                .appendPath("t")
+                                .appendPath("p")
+                                .appendPath("w185")
+                                .appendPath(moviePoster.replace("/", ""));
+
+                        Picasso.with(getApplicationContext()).load(builder.build());
+                    }
+
+                } catch (JSONException e) {
+                    Log.e("JSONException", e.toString());
+                }
+            }
+
         }
     }
+
+
+    public JSONArray getListFromJson(String s) throws JSONException {
+        JSONObject jsonObject = new JSONObject(s);
+        return jsonObject.getJSONArray("results");
+    }
+
 }
