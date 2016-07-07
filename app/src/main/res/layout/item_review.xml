@@ -7,14 +7,12 @@
 
     <TextView
         android:id="@+id/item_review_author"
-        android:text="hammerox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textStyle="bold"/>
 
     <TextView
         android:id="@+id/item_review_comment"
-        android:text="Awesome moview. Best Action sequence.\r\n\r\n**Slow in the first half**"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 

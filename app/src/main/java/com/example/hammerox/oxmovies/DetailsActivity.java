@@ -14,6 +14,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -213,15 +214,20 @@ public class DetailsActivity extends AppCompatActivity {
                 LinearLayout trailersView = (LinearLayout) findViewById(R.id.details_trailers);
 
                 int trailersCount = allTrailers.length();
-                for (int i = 0; i < trailersCount; i++) {
-                    JSONObject trailerObject = allTrailers.getJSONObject(i);
-                    String trailerTitle = trailerObject.getString("name");
+                if (trailersCount > 0) {
+                    for (int i = 0; i < trailersCount; i++) {
+                        JSONObject trailerObject = allTrailers.getJSONObject(i);
+                        String trailerTitle = trailerObject.getString("name");
 
-                    View custom = inflater.inflate(R.layout.item_trailer, null);
+                        View custom = inflater.inflate(R.layout.item_trailer, null);
 
-                    TextView trailerTitleView = (TextView) custom.findViewById(R.id.item_trailer_title);
-                    trailerTitleView.setText(trailerTitle);
+                        TextView trailerTitleView = (TextView) custom.findViewById(R.id.item_trailer_title);
+                        trailerTitleView.setText(trailerTitle);
 
+                        trailersView.addView(custom);
+                    }
+                } else {
+                    View custom = inflater.inflate(R.layout.item_trailer_empty, null);
                     trailersView.addView(custom);
                 }
 
@@ -232,19 +238,24 @@ public class DetailsActivity extends AppCompatActivity {
                 LinearLayout reviewsView = (LinearLayout) findViewById(R.id.details_reviews);
 
                 int reviewsCount = allReviews.length();
-                for (int i = 0; i < reviewsCount; i++) {
-                    JSONObject reviewObject = allReviews.getJSONObject(i);
-                    String reviewAuthor = reviewObject.getString("author");
-                    String reviewComment = reviewObject.getString("content");
+                if (reviewsCount > 0) {
+                    for (int i = 0; i < reviewsCount; i++) {
+                        JSONObject reviewObject = allReviews.getJSONObject(i);
+                        String reviewAuthor = reviewObject.getString("author");
+                        String reviewComment = reviewObject.getString("content");
 
-                    View custom = inflater.inflate(R.layout.item_review, null);
+                        View custom = inflater.inflate(R.layout.item_review, null);
 
-                    TextView reviewAuthorView = (TextView) custom.findViewById(R.id.item_review_author);
-                    reviewAuthorView.setText(reviewAuthor);
+                        TextView reviewAuthorView = (TextView) custom.findViewById(R.id.item_review_author);
+                        reviewAuthorView.setText(reviewAuthor);
 
-                    TextView reviewCommentView = (TextView) custom.findViewById(R.id.item_review_comment);
-                    reviewCommentView.setText(reviewComment);
+                        TextView reviewCommentView = (TextView) custom.findViewById(R.id.item_review_comment);
+                        reviewCommentView.setText(reviewComment);
 
+                        reviewsView.addView(custom);
+                    }
+                } else {
+                    View custom = inflater.inflate(R.layout.item_review_empty, null);
                     reviewsView.addView(custom);
                 }
 
