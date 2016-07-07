@@ -40,14 +40,13 @@
             android:paddingBottom="@dimen/padding">
 
             <TextView
-                android:id="@+id/details_synopsys"
                 android:text="SYNOPSYS        "
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textStyle="bold"/>
 
             <TextView
-                android:id="@+id/details_synopsys_input"
+                android:id="@+id/details_synopsys"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
         </LinearLayout>
@@ -60,7 +59,6 @@
             android:paddingBottom="@dimen/padding">
 
             <TextView
-                android:id="@+id/details_favourite"
                 android:text="FAVOURITE        "
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -68,7 +66,7 @@
                 android:textStyle="bold"/>
 
             <ImageButton
-                android:id="@+id/details_details_favourite_input"
+                android:id="@+id/details_details_favourite"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/star_empty"
@@ -83,14 +81,13 @@
             android:paddingBottom="@dimen/padding">
 
             <TextView
-                android:id="@+id/details_rating"
                 android:text="RATING        "
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textStyle="bold"/>
 
             <TextView
-                android:id="@+id/details_rating_input"
+                android:id="@+id/details_rating"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
         </LinearLayout>
@@ -103,20 +100,19 @@
             android:paddingBottom="@dimen/padding">
 
             <TextView
-                android:id="@+id/details_releasedate"
                 android:text="RELEASE DATE        "
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textStyle="bold"/>
 
             <TextView
-                android:id="@+id/details_releasedate_input"
+                android:id="@+id/details_releasedate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/details_trailers_input"
+            android:id="@+id/details_trailers"
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -124,7 +120,6 @@
             android:paddingBottom="@dimen/padding">
 
             <TextView
-                android:id="@+id/details_trailers"
                 android:text="TRAILERS        "
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -132,7 +127,7 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/details_reviews_input"
+            android:id="@+id/details_reviews"
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -140,7 +135,6 @@
             android:paddingBottom="@dimen/padding">
 
             <TextView
-                android:id="@+id/details_reviews"
                 android:text="REVIEWS        "
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

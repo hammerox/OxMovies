@@ -29,6 +29,8 @@ import java.net.URL;
 
 public class DetailsActivity extends AppCompatActivity {
 
+    private final String STRING_SEPARATOR = "###";
+
     private int width = 0;
     private int height = 0;
 
@@ -67,17 +69,10 @@ public class DetailsActivity extends AppCompatActivity {
             String movieDetailsJson = null;
 
             try {
-                Uri.Builder builder = new Uri.Builder();
-                builder.scheme("https")
-                        .authority("api.themoviedb.org")
-                        .appendPath("3")
-                        .appendPath("movie")
-                        .appendPath(params[0])
-                        .appendQueryParameter("api_key", MainActivity.API_KEY);
+                String detailsPath = detailsPath(params[0]);
+                URL url = new URL(detailsPath);
 
-                URL url = new URL(builder.build().toString());
-
-                // Create the request to OpenWeatherMap, and open the connection
+                // Create the request to TheMovieDatabase, and open the connection
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("GET");
                 urlConnection.connect();
@@ -106,6 +101,42 @@ public class DetailsActivity extends AppCompatActivity {
 
                 movieDetailsJson = buffer.toString();
 
+                // Do the same thing for trailers URL.
+                String trailersPath = trailersPath(params[0]);
+                url = new URL(trailersPath);
+
+                urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setRequestMethod("GET");
+                urlConnection.connect();
+
+                inputStream = urlConnection.getInputStream();
+                buffer = new StringBuffer();
+                reader = new BufferedReader(new InputStreamReader(inputStream));
+
+                while ((line = reader.readLine()) != null) {
+                    buffer.append(line + "\n");
+                }
+
+                movieDetailsJson = movieDetailsJson + STRING_SEPARATOR + buffer.toString();
+
+                // Do the same thing for reviews URL.
+                String reviewsPath = reviewsPath(params[0]);
+                url = new URL(reviewsPath);
+
+                urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setRequestMethod("GET");
+                urlConnection.connect();
+
+                inputStream = urlConnection.getInputStream();
+                buffer = new StringBuffer();
+                reader = new BufferedReader(new InputStreamReader(inputStream));
+
+                while ((line = reader.readLine()) != null) {
+                    buffer.append(line + "\n");
+                }
+
+                movieDetailsJson = movieDetailsJson + STRING_SEPARATOR + buffer.toString();
+
                 Log.d("JsonString", movieDetailsJson);
 
             } catch (IOException e) {
@@ -133,13 +164,15 @@ public class DetailsActivity extends AppCompatActivity {
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
             try {
-                JSONObject jsonObject = new JSONObject(s);
+                JSONObject detailsJSON = new JSONObject(s.split(STRING_SEPARATOR)[0]);
+                JSONObject trailersJSON = new JSONObject(s.split(STRING_SEPARATOR)[1]);
+                JSONObject reviewsJSON = new JSONObject(s.split(STRING_SEPARATOR)[2]);
 
-                String title = jsonObject.getString("original_title");
-                String poster = setPosterURL(jsonObject.getString("poster_path"));
-                String synopsys = jsonObject.getString("overview");
-                String rating = jsonObject.getString("vote_average");
-                String releaseDate = jsonObject.getString("release_date");
+                String title = detailsJSON.getString("original_title");
+                String poster = posterURL(detailsJSON.getString("poster_path"));
+                String synopsys = detailsJSON.getString("overview");
+                String rating = detailsJSON.getString("vote_average");
+                String releaseDate = detailsJSON.getString("release_date");
 
                 Log.d("Movie", title);
                 Log.d("Movie", poster);
@@ -149,9 +182,9 @@ public class DetailsActivity extends AppCompatActivity {
 
                 TextView titleView = (TextView) findViewById(R.id.details_title);
                 ImageView posterView = (ImageView) findViewById(R.id.details_poster);
-                TextView synopsysView = (TextView) findViewById(R.id.details_synopsys_input);
-                TextView ratingView = (TextView) findViewById(R.id.details_rating_input);
-                TextView releaseDateView = (TextView) findViewById(R.id.details_releasedate_input);
+                TextView synopsysView = (TextView) findViewById(R.id.details_synopsys);
+                TextView ratingView = (TextView) findViewById(R.id.details_rating);
+                TextView releaseDateView = (TextView) findViewById(R.id.details_releasedate);
 
                 titleView.setText(title);
                 Picasso.with(DetailsActivity.this)
@@ -172,7 +205,48 @@ public class DetailsActivity extends AppCompatActivity {
     }
 
 
-    public String setPosterURL(String path) {
+    public String detailsPath(String movieID) {
+        Uri.Builder builder = new Uri.Builder();
+        builder.scheme("https")
+                .authority("api.themoviedb.org")
+                .appendPath("3")
+                .appendPath("movie")
+                .appendPath(movieID)
+                .appendQueryParameter("api_key", MainActivity.API_KEY);
+
+        return builder.build().toString();
+    }
+
+
+    public String trailersPath(String movieID) {
+        Uri.Builder builder = new Uri.Builder();
+        builder.scheme("https")
+                .authority("api.themoviedb.org")
+                .appendPath("3")
+                .appendPath("movie")
+                .appendPath(movieID)
+                .appendPath("videos")
+                .appendQueryParameter("api_key", MainActivity.API_KEY);
+
+        return builder.build().toString();
+    }
+
+
+    public String reviewsPath(String movieID) {
+        Uri.Builder builder = new Uri.Builder();
+        builder.scheme("https")
+                .authority("api.themoviedb.org")
+                .appendPath("3")
+                .appendPath("movie")
+                .appendPath(movieID)
+                .appendPath("reviews")
+                .appendQueryParameter("api_key", MainActivity.API_KEY);
+
+        return builder.build().toString();
+    }
+
+
+    public String posterURL(String path) {
         Uri.Builder builder = new Uri.Builder();
         builder.scheme("http")
                 .authority("image.tmdb.org")
