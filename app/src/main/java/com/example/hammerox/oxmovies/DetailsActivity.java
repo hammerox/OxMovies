@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.support.v4.util.Pair;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,7 +15,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -31,6 +31,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DetailsActivity extends AppCompatActivity {
 
@@ -38,6 +40,8 @@ public class DetailsActivity extends AppCompatActivity {
 
     private int width = 0;
     private int height = 0;
+
+    private List<Pair<String, String>> trailerList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -215,9 +219,15 @@ public class DetailsActivity extends AppCompatActivity {
 
                 int trailersCount = allTrailers.length();
                 if (trailersCount > 0) {
+
+                    trailerList = new ArrayList<>();
+
                     for (int i = 0; i < trailersCount; i++) {
                         JSONObject trailerObject = allTrailers.getJSONObject(i);
                         String trailerTitle = trailerObject.getString("name");
+                        String trailerKey = trailerObject.getString("key");
+                        Pair<String, String> trailerPair = new Pair<>(trailerTitle, trailerKey);
+                        trailerList.add(trailerPair);
 
                         View custom = inflater.inflate(R.layout.item_trailer, null);
 
@@ -333,5 +343,31 @@ public class DetailsActivity extends AppCompatActivity {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, height);
         params.gravity = Gravity.CENTER;
         posterView.setLayoutParams(params);
+    }
+
+
+    public void showTrailer(View view) {
+        TextView titleView = (TextView) view.findViewById(R.id.item_trailer_title);
+        String title = titleView.getText().toString();
+        String key = null;
+
+        for (Pair<String, String> trailer : trailerList) {
+            if (trailer.first.matches(title)) {
+                key = trailer.second;
+                break;
+            }
+        }
+
+        Uri.Builder builder = new Uri.Builder();
+        builder.scheme("http")
+                .authority("www.youtube.com")
+                .appendPath("watch")
+                .appendQueryParameter("v", key);
+
+        Intent intent = new Intent(Intent.ACTION_VIEW, builder.build());
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+        }
+
     }
 }
