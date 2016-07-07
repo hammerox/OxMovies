@@ -29,8 +29,6 @@ import java.net.URL;
 
 public class DetailsActivity extends AppCompatActivity {
 
-    private final String API_KEY = "YOUR_API_KEY_HERE";
-
     private int width = 0;
     private int height = 0;
 
@@ -75,7 +73,7 @@ public class DetailsActivity extends AppCompatActivity {
                         .appendPath("3")
                         .appendPath("movie")
                         .appendPath(params[0])
-                        .appendQueryParameter("api_key", API_KEY);
+                        .appendQueryParameter("api_key", MainActivity.API_KEY);
 
                 URL url = new URL(builder.build().toString());
 

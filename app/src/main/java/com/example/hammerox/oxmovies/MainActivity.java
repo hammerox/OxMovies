@@ -36,7 +36,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private final String API_KEY = "YOUR_API_KEY_HERE";
+    public static final String API_KEY = "YOUR_API_KEY_HERE";
 
     private GridView gridView = null;
     private ImageAdapter imageAdapter = null;
