@@ -1,5 +1,6 @@
 package com.example.hammerox.oxmovies;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Point;
 import android.net.Uri;
@@ -10,13 +11,16 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -164,10 +168,12 @@ public class DetailsActivity extends AppCompatActivity {
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
             try {
+                // Get respective JSON from string
                 JSONObject detailsJSON = new JSONObject(s.split(STRING_SEPARATOR)[0]);
                 JSONObject trailersJSON = new JSONObject(s.split(STRING_SEPARATOR)[1]);
                 JSONObject reviewsJSON = new JSONObject(s.split(STRING_SEPARATOR)[2]);
 
+                // Set up details
                 String title = detailsJSON.getString("original_title");
                 String poster = posterURL(detailsJSON.getString("poster_path"));
                 String synopsys = detailsJSON.getString("overview");
@@ -195,6 +201,30 @@ public class DetailsActivity extends AppCompatActivity {
                 synopsysView.setText(synopsys);
                 ratingView.setText(rating);
                 releaseDateView.setText(releaseDate);
+
+                // Set up trailers
+                JSONArray allTrailers = trailersJSON.getJSONArray("results");
+                Log.d("Movie", allTrailers.toString());
+
+                LayoutInflater inflater =
+                        (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                LinearLayout trailersView = (LinearLayout) findViewById(R.id.details_trailers);
+
+                int trailersCount = allTrailers.length();
+                for (int i = 0; i < trailersCount; i++) {
+                    JSONObject trailerObject = allTrailers.getJSONObject(i);
+                    String trailerTitle = trailerObject.getString("name");
+
+                    View custom = inflater.inflate(R.layout.item_trailer, null);
+                    TextView trailerTitleView = (TextView) custom.findViewById(R.id.item_trailer_title);
+                    trailerTitleView.setText(trailerTitle);
+
+                    trailersView.addView(custom);
+                }
+
+                // Set up reviews
+                JSONArray allReviews = reviewsJSON.getJSONArray("results");
+                Log.d("Movie", allReviews.toString());
 
             } catch (JSONException e) {
                 Log.e("JSONException", e.toString());
