@@ -10,14 +10,12 @@
         android:layout_height="wrap_content"
         android:src="@drawable/play"
         android:layout_gravity="center_vertical"
-        android:padding="10dp"/>
+        android:padding="10dp" />
 
     <TextView
         android:id="@+id/item_trailer_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Trailer Dummy"
-        android:layout_gravity="center_vertical"
-        />
+        android:layout_gravity="center_vertical" />
 
 </LinearLayout>

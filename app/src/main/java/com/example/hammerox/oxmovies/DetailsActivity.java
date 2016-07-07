@@ -167,6 +167,10 @@ public class DetailsActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
+
+            LayoutInflater inflater =
+                    (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
             try {
                 // Get respective JSON from string
                 JSONObject detailsJSON = new JSONObject(s.split(STRING_SEPARATOR)[0]);
@@ -206,8 +210,6 @@ public class DetailsActivity extends AppCompatActivity {
                 JSONArray allTrailers = trailersJSON.getJSONArray("results");
                 Log.d("Movie", allTrailers.toString());
 
-                LayoutInflater inflater =
-                        (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 LinearLayout trailersView = (LinearLayout) findViewById(R.id.details_trailers);
 
                 int trailersCount = allTrailers.length();
@@ -216,6 +218,7 @@ public class DetailsActivity extends AppCompatActivity {
                     String trailerTitle = trailerObject.getString("name");
 
                     View custom = inflater.inflate(R.layout.item_trailer, null);
+
                     TextView trailerTitleView = (TextView) custom.findViewById(R.id.item_trailer_title);
                     trailerTitleView.setText(trailerTitle);
 
@@ -225,6 +228,25 @@ public class DetailsActivity extends AppCompatActivity {
                 // Set up reviews
                 JSONArray allReviews = reviewsJSON.getJSONArray("results");
                 Log.d("Movie", allReviews.toString());
+
+                LinearLayout reviewsView = (LinearLayout) findViewById(R.id.details_reviews);
+
+                int reviewsCount = allReviews.length();
+                for (int i = 0; i < reviewsCount; i++) {
+                    JSONObject reviewObject = allReviews.getJSONObject(i);
+                    String reviewAuthor = reviewObject.getString("author");
+                    String reviewComment = reviewObject.getString("content");
+
+                    View custom = inflater.inflate(R.layout.item_review, null);
+
+                    TextView reviewAuthorView = (TextView) custom.findViewById(R.id.item_review_author);
+                    reviewAuthorView.setText(reviewAuthor);
+
+                    TextView reviewCommentView = (TextView) custom.findViewById(R.id.item_review_comment);
+                    reviewCommentView.setText(reviewComment);
+
+                    reviewsView.addView(custom);
+                }
 
             } catch (JSONException e) {
                 Log.e("JSONException", e.toString());
