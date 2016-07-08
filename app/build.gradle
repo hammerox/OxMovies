@@ -19,10 +19,30 @@ android {
     }
 }
 
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
+    }
+}
+
+repositories {
+    jcenter()
+}
+
+apply plugin: 'com.neenbedankt.android-apt'
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.4.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.android.support:support-v4:23.4.0'
+    compile 'com.yahoo.squidb:squidb:3.0.0'
+    compile 'com.yahoo.squidb:squidb-annotations:3.0.0'
+    compile 'com.yahoo.squidb:squidb-android:3.0.0'
+    apt 'com.yahoo.squidb:squidb-processor:3.0.0'
 }
