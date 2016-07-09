@@ -3,7 +3,6 @@ package com.example.hammerox.oxmovies;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -65,9 +64,20 @@ public class MainActivity extends AppCompatActivity {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(MainActivity.this, DetailsActivity.class);
-                intent.putExtra(Intent.EXTRA_TEXT, IDList.get(position));
-                startActivity(intent);
+                Intent intent;
+                switch (sortOrder) {
+                    case 0:
+                    case 1:
+                        intent = new Intent(MainActivity.this, DetailsActivity.class);
+                        intent.putExtra(Intent.EXTRA_TEXT, IDList.get(position));
+                        startActivity(intent);
+                        break;
+                    case 2:
+                        intent = new Intent(MainActivity.this, DetailsOfflineActivity.class);
+                        intent.putExtra(Intent.EXTRA_TEXT, IDList.get(position));
+                        startActivity(intent);
+                        break;
+                }
             }
         });
     }

@@ -94,9 +94,9 @@ public class DetailsActivity extends AppCompatActivity {
         } else {
             Criterion criteria = Movie.MOVIE_ID.eq(movie.getMovieId());
             db.deleteWhere(Movie.class, criteria);
+            Utility.removePosterImage(movieID);
             Toast.makeText(this, "Removed from favourites", Toast.LENGTH_LONG).show();
         }
-
     }
 
 
@@ -239,7 +239,7 @@ public class DetailsActivity extends AppCompatActivity {
                 ratingView.setText(rating);
                 releaseDateView.setText(releaseDate);
                 favouriteView.setVisibility(View.VISIBLE);
-                favouriteView.setChecked(isFavourite());
+                favouriteView.setChecked(Utility.isFavourite(DetailsActivity.this, movieID));
 
                 // Set up trailers
                 JSONArray allTrailers = trailersJSON.getJSONArray("results");
@@ -309,19 +309,6 @@ public class DetailsActivity extends AppCompatActivity {
             } catch (NullPointerException e) {
                 Log.e("NullPointerException", e.toString());
             }
-        }
-    }
-
-
-    public boolean isFavourite() {
-        MovieDatabase database = new MovieDatabase(DetailsActivity.this);
-        Log.d("database", "db count: " + database.countAll(Movie.class));
-        Query query = Query.select().from(Movie.TABLE).where(Movie.MOVIE_ID.eq(movieID));
-        SquidCursor<Movie> cursor = database.query(Movie.class, query);
-        if (cursor.getCount() > 0) {
-            return true;
-        } else {
-            return false;
         }
     }
 
