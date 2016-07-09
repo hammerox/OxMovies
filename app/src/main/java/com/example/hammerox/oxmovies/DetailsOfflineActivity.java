@@ -34,8 +34,6 @@ import java.util.List;
 
 public class DetailsOfflineActivity extends AppCompatActivity {
 
-    private final String STRING_SEPARATOR = "###";
-
     String movieID;
     private Movie movie = new Movie();
 
@@ -75,6 +73,7 @@ public class DetailsOfflineActivity extends AppCompatActivity {
             Movie movie = new Movie();
             while (cursor.moveToNext()) {
                 movie.readPropertiesFromCursor(cursor);
+                this.movie = movie;
 
                 titleView.setText(movie.getTitle());
                 posterView.setImageBitmap(Utility.loadPosterImage(movieID));
