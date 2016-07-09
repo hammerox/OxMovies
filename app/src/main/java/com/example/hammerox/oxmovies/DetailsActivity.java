@@ -24,7 +24,9 @@ import android.widget.Toast;
 import com.example.hammerox.oxmovies.data.Movie;
 import com.example.hammerox.oxmovies.data.MovieDatabase;
 import com.squareup.picasso.Picasso;
+import com.yahoo.squidb.data.SquidCursor;
 import com.yahoo.squidb.sql.Criterion;
+import com.yahoo.squidb.sql.Query;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -215,24 +217,12 @@ public class DetailsActivity extends AppCompatActivity {
                 String rating = detailsJSON.getString("vote_average");
                 String releaseDate = detailsJSON.getString("release_date");
 
-                movie.setTitle(title);
-                movie.setMovieId(Integer.parseInt(movieID));
-                movie.setPosterUri(poster);
-                movie.setRating(Double.parseDouble(rating));
-                movie.setReleaseDate(releaseDate);
-                movie.setSynopsys(synopsys);
-
-                Log.d("Movie", title);
-                Log.d("Movie", poster);
-                Log.d("Movie", synopsys);
-                Log.d("Movie", rating);
-                Log.d("Movie", releaseDate);
-
                 TextView titleView = (TextView) findViewById(R.id.details_title);
                 ImageView posterView = (ImageView) findViewById(R.id.details_poster);
                 TextView synopsysView = (TextView) findViewById(R.id.details_synopsys);
                 TextView ratingView = (TextView) findViewById(R.id.details_rating);
                 TextView releaseDateView = (TextView) findViewById(R.id.details_releasedate);
+                CheckBox favouriteView = (CheckBox) findViewById(R.id.details_favourite);
 
                 titleView.setText(title);
                 Picasso.with(DetailsActivity.this)
@@ -243,6 +233,8 @@ public class DetailsActivity extends AppCompatActivity {
                 synopsysView.setText(synopsys);
                 ratingView.setText(rating);
                 releaseDateView.setText(releaseDate);
+                favouriteView.setVisibility(View.VISIBLE);
+                favouriteView.setChecked(isFavourite());
 
                 // Set up trailers
                 JSONArray allTrailers = trailersJSON.getJSONArray("results");
@@ -302,11 +294,34 @@ public class DetailsActivity extends AppCompatActivity {
                     reviewsView.addView(custom);
                 }
 
+                // Set up Movie object
+                movie.setTitle(title);
+                movie.setMovieId(Integer.parseInt(movieID));
+                movie.setPosterUri(poster);
+                //movie.setPosterImage();
+                movie.setSynopsys(synopsys);
+                movie.setRating(Double.parseDouble(rating));
+                movie.setReleaseDate(releaseDate);
+                movie.setTrailersJson(s.split(STRING_SEPARATOR)[1]);
+                movie.setReviewsJson(s.split(STRING_SEPARATOR)[2]);
+
             } catch (JSONException e) {
                 Log.e("JSONException", e.toString());
             } catch (NullPointerException e) {
                 Log.e("NullPointerException", e.toString());
             }
+        }
+    }
+
+
+    public boolean isFavourite() {
+        MovieDatabase database = new MovieDatabase(DetailsActivity.this);
+        Query query = Query.select().from(Movie.TABLE).where(Movie.MOVIE_ID.eq(movieID));
+        SquidCursor<Movie> cursor = database.query(Movie.class, query);
+        if (cursor.getCount() > 0) {
+            return true;
+        } else {
+            return false;
         }
     }
 
