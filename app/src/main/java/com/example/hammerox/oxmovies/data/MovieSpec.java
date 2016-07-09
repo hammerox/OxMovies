@@ -15,8 +15,5 @@ class MovieSpec {
     String releaseDate;
     String trailersJson;
     String reviewsJson;
-    boolean isTopRated;
-    boolean isPopular;
-    boolean isFavourite;
 
 }

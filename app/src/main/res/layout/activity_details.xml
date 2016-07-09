@@ -70,7 +70,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:button="@drawable/ic_favourite"
-                android:scaleType="centerInside"/>
+                android:scaleType="centerInside"
+                android:onClick="favourite"
+                android:visibility="invisible"/>
         </LinearLayout>
 
         <LinearLayout

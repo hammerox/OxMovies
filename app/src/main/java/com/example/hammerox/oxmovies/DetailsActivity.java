@@ -15,11 +15,16 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.hammerox.oxmovies.data.Movie;
+import com.example.hammerox.oxmovies.data.MovieDatabase;
 import com.squareup.picasso.Picasso;
+import com.yahoo.squidb.sql.Criterion;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -38,6 +43,9 @@ public class DetailsActivity extends AppCompatActivity {
 
     private final String STRING_SEPARATOR = "###";
 
+    String movieID;
+    private Movie movie = new Movie();
+
     private int width = 0;
     private int height = 0;
 
@@ -52,7 +60,7 @@ public class DetailsActivity extends AppCompatActivity {
 
         setPosterDimensions();
 
-        String movieID = getIntent().getStringExtra(Intent.EXTRA_TEXT);
+        movieID = getIntent().getStringExtra(Intent.EXTRA_TEXT);
 
         new FetchMovieDetails().execute(movieID);
     }
@@ -68,6 +76,24 @@ public class DetailsActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+
+    public void favourite(View v) {
+        CheckBox box = (CheckBox) v;
+
+        MovieDatabase db = new MovieDatabase(this);
+
+        if (box.isChecked()) {
+            db.createNew(movie);
+            Toast.makeText(this, "Added to favourites " + db.countAll(Movie.class), Toast.LENGTH_LONG).show();
+        } else {
+            Criterion criteria = Movie.MOVIE_ID.eq(movie.getMovieId());
+            db.deleteWhere(Movie.class, criteria);
+            Toast.makeText(this, "Removed from favourites " + db.countAll(Movie.class), Toast.LENGTH_LONG).show();
+        }
+
+    }
+
 
     public class FetchMovieDetails extends AsyncTask<String, Void, String> {
         @Override
@@ -188,6 +214,13 @@ public class DetailsActivity extends AppCompatActivity {
                 String synopsys = detailsJSON.getString("overview");
                 String rating = detailsJSON.getString("vote_average");
                 String releaseDate = detailsJSON.getString("release_date");
+
+                movie.setTitle(title);
+                movie.setMovieId(Integer.parseInt(movieID));
+                movie.setPosterUri(poster);
+                movie.setRating(Double.parseDouble(rating));
+                movie.setReleaseDate(releaseDate);
+                movie.setSynopsys(synopsys);
 
                 Log.d("Movie", title);
                 Log.d("Movie", poster);

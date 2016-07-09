@@ -1,5 +1,8 @@
 package com.example.hammerox.oxmovies.data;
 
+import android.content.Context;
+
+import com.yahoo.squidb.android.AndroidOpenHelper;
 import com.yahoo.squidb.data.ISQLiteDatabase;
 import com.yahoo.squidb.data.ISQLiteOpenHelper;
 import com.yahoo.squidb.data.SquidDatabase;
@@ -9,6 +12,8 @@ import com.yahoo.squidb.sql.Table;
 
 public class MovieDatabase extends SquidDatabase {
 
+    private static Context mContext;
+
     private static final int VERSION = 2;
 
     private static MovieDatabase instance = null;
@@ -17,15 +22,16 @@ public class MovieDatabase extends SquidDatabase {
         if (instance == null) {
             synchronized (MovieDatabase.class) {
                 if (instance == null) {
-                    instance = new MovieDatabase();
+                    instance = new MovieDatabase(mContext);
                 }
             }
         }
         return instance;
     }
 
-    private MovieDatabase() {
+    public MovieDatabase(Context context) {
         super();
+        mContext = context;
     }
 
     @Override
@@ -64,8 +70,7 @@ public class MovieDatabase extends SquidDatabase {
     }
 
     @Override
-    protected ISQLiteOpenHelper createOpenHelper(String databaseName, OpenHelperDelegate delegate,
-                                                 int version) {
-        return OpenHelperCreator.getCreator().createOpenHelper(databaseName, delegate, version);
+    protected ISQLiteOpenHelper createOpenHelper(String databaseName, OpenHelperDelegate delegate, int version) {
+        return new AndroidOpenHelper(mContext, databaseName, delegate, version);
     }
 }

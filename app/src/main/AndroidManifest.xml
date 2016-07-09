@@ -26,7 +26,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.hammerox.oxmovies.MainActivity" />
         </activity>
-        <activity android:name=".DetailsActivity"></activity>
+        <activity android:name=".DetailsActivity" />
     </application>
 
 </manifest>
