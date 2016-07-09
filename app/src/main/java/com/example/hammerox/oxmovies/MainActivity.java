@@ -132,16 +132,11 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void getFavouriteGrid() {
-        if (bitmapList == null) {
-            IDList = new ArrayList<>();
-            bitmapList = new ArrayList<>();
-        } else {
-            IDList.clear();
-            bitmapList.clear();
-        }
+        clearLists();
 
         MovieDatabase database = new MovieDatabase(this);
         int size = database.countAll(Movie.class);
+        Log.d("database", "size: " + size);
 
         if (size > 0) {
             Query query = Query.select().from(Movie.TABLE);
@@ -257,13 +252,7 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
 
-            if (posterList == null) {
-                IDList = new ArrayList<>();
-                posterList = new ArrayList<>();
-            } else {
-                IDList.clear();
-                posterList.clear();
-            }
+            clearLists();
 
             if (s != null) {
 
@@ -372,6 +361,27 @@ public class MainActivity extends AppCompatActivity {
            return 0;
        }
    }
+
+
+    public void clearLists() {
+        if (IDList == null) {
+            IDList = new ArrayList<>();
+        } else {
+            IDList.clear();
+        }
+
+        if (posterList == null) {
+            posterList = new ArrayList<>();
+        } else {
+            posterList.clear();
+        }
+
+        if (bitmapList == null) {
+            bitmapList = new ArrayList<>();
+        } else {
+            bitmapList.clear();
+        }
+    }
 
 
     public void setPosterDimensions() {
