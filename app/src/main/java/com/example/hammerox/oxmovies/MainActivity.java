@@ -147,14 +147,8 @@ public class MainActivity extends AppCompatActivity {
                     movie.readPropertiesFromCursor(cursor);
 
                     String movieId = movie.getMovieId().toString();
-                    Log.d("movie", movieId);
+                    Log.d("movie", "movieId: " + movieId);
                     IDList.add(movieId);
-
-                    byte[] posterImage = movie.getPosterImage();
-                    Log.d("movie", posterImage.toString());
-
-                    Bitmap bmp = BitmapFactory.decodeByteArray(posterImage, 0, posterImage.length);
-                    bitmapList.add(bmp);
                 }
 
                 imageAdapter = new ImageAdapter();
@@ -324,7 +318,8 @@ public class MainActivity extends AppCompatActivity {
                        .into(imageView);
                    break;
                case 2:
-                   Bitmap bmp = bitmapList.get(position);
+                   String id = IDList.get(position);
+                   Bitmap bmp = Utility.loadPosterImage(id);
                    imageView.setImageBitmap(bmp);
                    break;
            }
@@ -344,7 +339,7 @@ public class MainActivity extends AppCompatActivity {
                case 1:
                    return posterList.get(position);
                case 2:
-                   return bitmapList.get(position);
+                   return IDList.get(position);
            }
            return 0;
        }
@@ -356,7 +351,7 @@ public class MainActivity extends AppCompatActivity {
                case 1:
                    return posterList.size();
                case 2:
-                   return bitmapList.size();
+                   return IDList.size();
            }
            return 0;
        }

@@ -88,6 +88,8 @@ public class DetailsActivity extends AppCompatActivity {
 
         if (box.isChecked()) {
             db.createNew(movie);
+            ImageView posterView = (ImageView) findViewById(R.id.details_poster);
+            Utility.savePosterImage(posterView, movieID);
             Toast.makeText(this, "Added to favourites", Toast.LENGTH_LONG).show();
         } else {
             Criterion criteria = Movie.MOVIE_ID.eq(movie.getMovieId());
