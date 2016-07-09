@@ -27,6 +27,7 @@
                 android:value="com.example.hammerox.oxmovies.MainActivity" />
         </activity>
         <activity android:name=".DetailsActivity" />
+        <activity android:name=".DetailsOfflineActivity"></activity>
     </application>
 
 </manifest>

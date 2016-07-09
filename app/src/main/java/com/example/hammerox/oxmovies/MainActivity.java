@@ -2,6 +2,8 @@ package com.example.hammerox.oxmovies;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -19,7 +21,11 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 
+import com.example.hammerox.oxmovies.data.Movie;
+import com.example.hammerox.oxmovies.data.MovieDatabase;
 import com.squareup.picasso.Picasso;
+import com.yahoo.squidb.data.SquidCursor;
+import com.yahoo.squidb.sql.Query;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -38,10 +44,13 @@ public class MainActivity extends AppCompatActivity {
 
     public static final String API_KEY = "YOUR_API_KEY_HERE";
 
+    private int sortOrder = 0;
+
     private GridView gridView = null;
     private ImageAdapter imageAdapter = null;
     private List<String> IDList = null;
     private List<String> posterList = null;
+    private List<Bitmap> bitmapList = null;
     private int width = 0;
     private int height = 0;
 
@@ -83,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
 
         switch (id) {
             case R.id.action_refresh:
+                setSortOrder();
                 updateGridContent();
                 return true;
             case R.id.action_settings:
@@ -94,14 +104,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void updateGridContent() {
+    public void setSortOrder() {
         SharedPreferences prefs = PreferenceManager
                 .getDefaultSharedPreferences(getApplicationContext());
 
         String sortOrderString = prefs.getString(
                 getString(R.string.pref_sort_order_key),
                 getString(R.string.pref_sort_order_default));
-        int sortOrder = Integer.valueOf(sortOrderString);
+        sortOrder = Integer.valueOf(sortOrderString);
+        Log.d("sortOrder", String.valueOf(sortOrder));
+    }
+
+
+    public void updateGridContent() {
+        setSortOrder();
 
         switch (sortOrder) {
             case 0:
@@ -109,8 +125,50 @@ public class MainActivity extends AppCompatActivity {
                 new FetchMovieList().execute(sortOrder);
                 break;
             case 2:
+                getFavouriteGrid();
                 break;
         }
+    }
+
+
+    public void getFavouriteGrid() {
+        if (bitmapList == null) {
+            IDList = new ArrayList<>();
+            bitmapList = new ArrayList<>();
+        } else {
+            IDList.clear();
+            bitmapList.clear();
+        }
+
+        MovieDatabase database = new MovieDatabase(this);
+        int size = database.countAll(Movie.class);
+
+        if (size > 0) {
+            Query query = Query.select().from(Movie.TABLE);
+            SquidCursor<Movie> cursor = database.query(Movie.class, query);
+            try {
+                Movie movie = new Movie();
+                while (cursor.moveToNext()) {
+                    movie.readPropertiesFromCursor(cursor);
+
+                    String movieId = movie.getMovieId().toString();
+                    Log.d("movie", movieId);
+                    IDList.add(movieId);
+
+                    byte[] posterImage = movie.getPosterImage();
+                    Log.d("movie", posterImage.toString());
+
+                    Bitmap bmp = BitmapFactory.decodeByteArray(posterImage, 0, posterImage.length);
+                    bitmapList.add(bmp);
+                }
+
+                imageAdapter = new ImageAdapter();
+                gridView.setAdapter(imageAdapter);
+            } finally {
+                cursor.close();
+            }
+        }
+
     }
 
 
@@ -199,7 +257,7 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
 
-            if (IDList == null) {
+            if (posterList == null) {
                 IDList = new ArrayList<>();
                 posterList = new ArrayList<>();
             } else {
@@ -266,12 +324,21 @@ public class MainActivity extends AppCompatActivity {
                imageView = (ImageView) convertView;
            }
 
-            Picasso
-                    .with(MainActivity.this)
-                    .load(posterList.get(position))
-                    .fit()
-                    .centerCrop()
-                    .into(imageView);
+           switch (sortOrder) {
+               case 0:
+               case 1:
+                   Picasso
+                       .with(MainActivity.this)
+                       .load(posterList.get(position))
+                       .fit()
+                       .centerCrop()
+                       .into(imageView);
+                   break;
+               case 2:
+                   Bitmap bmp = bitmapList.get(position);
+                   imageView.setImageBitmap(bmp);
+                   break;
+           }
 
            return imageView;
        }
@@ -283,12 +350,26 @@ public class MainActivity extends AppCompatActivity {
 
        @Override
        public Object getItem(int position) {
-           return posterList.get(position);
+           switch (sortOrder) {
+               case 0:
+               case 1:
+                   return posterList.get(position);
+               case 2:
+                   return bitmapList.get(position);
+           }
+           return 0;
        }
 
        @Override
        public int getCount() {
-           return posterList.size();
+           switch (sortOrder) {
+               case 0:
+               case 1:
+                   return posterList.size();
+               case 2:
+                   return bitmapList.size();
+           }
+           return 0;
        }
    }
 

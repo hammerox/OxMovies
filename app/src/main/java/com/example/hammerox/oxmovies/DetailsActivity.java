@@ -221,9 +221,11 @@ public class DetailsActivity extends AppCompatActivity {
                 TextView titleView = (TextView) findViewById(R.id.details_title);
                 ImageView posterView = (ImageView) findViewById(R.id.details_poster);
                 TextView synopsysView = (TextView) findViewById(R.id.details_synopsys);
+                CheckBox favouriteView = (CheckBox) findViewById(R.id.details_favourite);
                 TextView ratingView = (TextView) findViewById(R.id.details_rating);
                 TextView releaseDateView = (TextView) findViewById(R.id.details_releasedate);
-                CheckBox favouriteView = (CheckBox) findViewById(R.id.details_favourite);
+                LinearLayout trailersView = (LinearLayout) findViewById(R.id.details_trailers);
+                LinearLayout reviewsView = (LinearLayout) findViewById(R.id.details_reviews);
 
                 titleView.setText(title);
                 Picasso.with(DetailsActivity.this)
@@ -239,8 +241,6 @@ public class DetailsActivity extends AppCompatActivity {
 
                 // Set up trailers
                 JSONArray allTrailers = trailersJSON.getJSONArray("results");
-
-                LinearLayout trailersView = (LinearLayout) findViewById(R.id.details_trailers);
 
                 int trailersCount = allTrailers.length();
                 if (trailersCount > 0) {
@@ -268,8 +268,6 @@ public class DetailsActivity extends AppCompatActivity {
 
                 // Set up reviews
                 JSONArray allReviews = reviewsJSON.getJSONArray("results");
-
-                LinearLayout reviewsView = (LinearLayout) findViewById(R.id.details_reviews);
 
                 int reviewsCount = allReviews.length();
                 if (reviewsCount > 0) {
@@ -315,6 +313,7 @@ public class DetailsActivity extends AppCompatActivity {
 
     public boolean isFavourite() {
         MovieDatabase database = new MovieDatabase(DetailsActivity.this);
+        Log.d("database", "db count: " + database.countAll(Movie.class));
         Query query = Query.select().from(Movie.TABLE).where(Movie.MOVIE_ID.eq(movieID));
         SquidCursor<Movie> cursor = database.query(Movie.class, query);
         if (cursor.getCount() > 0) {
