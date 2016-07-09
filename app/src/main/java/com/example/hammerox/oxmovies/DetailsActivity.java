@@ -2,6 +2,7 @@ package com.example.hammerox.oxmovies;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -33,6 +34,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -82,16 +84,15 @@ public class DetailsActivity extends AppCompatActivity {
 
     public void favourite(View v) {
         CheckBox box = (CheckBox) v;
-
         MovieDatabase db = new MovieDatabase(this);
 
         if (box.isChecked()) {
             db.createNew(movie);
-            Toast.makeText(this, "Added to favourites " + db.countAll(Movie.class), Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Added to favourites", Toast.LENGTH_LONG).show();
         } else {
             Criterion criteria = Movie.MOVIE_ID.eq(movie.getMovieId());
             db.deleteWhere(Movie.class, criteria);
-            Toast.makeText(this, "Removed from favourites " + db.countAll(Movie.class), Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Removed from favourites", Toast.LENGTH_LONG).show();
         }
 
     }
@@ -238,7 +239,6 @@ public class DetailsActivity extends AppCompatActivity {
 
                 // Set up trailers
                 JSONArray allTrailers = trailersJSON.getJSONArray("results");
-                Log.d("Movie", allTrailers.toString());
 
                 LinearLayout trailersView = (LinearLayout) findViewById(R.id.details_trailers);
 
@@ -268,7 +268,6 @@ public class DetailsActivity extends AppCompatActivity {
 
                 // Set up reviews
                 JSONArray allReviews = reviewsJSON.getJSONArray("results");
-                Log.d("Movie", allReviews.toString());
 
                 LinearLayout reviewsView = (LinearLayout) findViewById(R.id.details_reviews);
 
@@ -298,7 +297,7 @@ public class DetailsActivity extends AppCompatActivity {
                 movie.setTitle(title);
                 movie.setMovieId(Integer.parseInt(movieID));
                 movie.setPosterUri(poster);
-                //movie.setPosterImage();
+                movie.setPosterImage(getPosterImage(posterView));
                 movie.setSynopsys(synopsys);
                 movie.setRating(Double.parseDouble(rating));
                 movie.setReleaseDate(releaseDate);
@@ -323,6 +322,17 @@ public class DetailsActivity extends AppCompatActivity {
         } else {
             return false;
         }
+    }
+
+
+    public byte[] getPosterImage(ImageView view){
+        view.setDrawingCacheEnabled(true);
+        view.buildDrawingCache();
+        Bitmap bitmap = view.getDrawingCache();
+
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        return stream.toByteArray();
     }
 
 
