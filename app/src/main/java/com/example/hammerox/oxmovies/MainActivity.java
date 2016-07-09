@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        new FetchMovieList().execute();
+        updateGridContent();
     }
 
     @Override
@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
 
         switch (id) {
             case R.id.action_refresh:
-                new FetchMovieList().execute();
+                updateGridContent();
                 return true;
             case R.id.action_settings:
                 Intent intent = new Intent(this, SettingsActivity.class);
@@ -93,10 +93,31 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public class FetchMovieList extends AsyncTask<Void, Void, String> {
+
+    public void updateGridContent() {
+        SharedPreferences prefs = PreferenceManager
+                .getDefaultSharedPreferences(getApplicationContext());
+
+        String sortOrderString = prefs.getString(
+                getString(R.string.pref_sort_order_key),
+                getString(R.string.pref_sort_order_default));
+        int sortOrder = Integer.valueOf(sortOrderString);
+
+        switch (sortOrder) {
+            case 0:
+            case 1:
+                new FetchMovieList().execute(sortOrder);
+                break;
+            case 2:
+                break;
+        }
+    }
+
+
+    public class FetchMovieList extends AsyncTask<Integer, Void, String> {
 
         @Override
-        protected String doInBackground(Void... params) {
+        protected String doInBackground(Integer... params) {
 
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
@@ -109,14 +130,7 @@ public class MainActivity extends AppCompatActivity {
                         .appendPath("3")
                         .appendPath("movie");
 
-                SharedPreferences prefs = PreferenceManager
-                        .getDefaultSharedPreferences(getApplicationContext());
-
-                String sortOrderString = prefs.getString(
-                        getString(R.string.pref_sort_order_key),
-                        getString(R.string.pref_sort_order_default));
-                int sortOrder = Integer.valueOf(sortOrderString);
-                switch (sortOrder) {
+                switch (params[0]) {
                     case 0:
                         builder.appendPath("top_rated");
                         break;

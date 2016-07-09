@@ -12,11 +12,13 @@
     <string-array name="pref_sort_order">
         <item>Highest Rated</item>
         <item>Most Popular</item>
+        <item>Your Favourites</item>
     </string-array>
 
     <string-array name="pref_sort_order_values">
         <item>0</item>
         <item>1</item>
+        <item>2</item>
     </string-array>
 
 </resources>
