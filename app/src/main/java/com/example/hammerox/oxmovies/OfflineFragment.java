@@ -2,14 +2,15 @@ package com.example.hammerox.oxmovies;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.v4.util.Pair;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.util.Pair;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -27,7 +28,10 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DetailsOfflineActivity extends AppCompatActivity {
+
+public class OfflineFragment extends Fragment {
+
+    private OnFragmentInteractionListener mListener;
 
     String movieID;
     private Movie movie = new Movie();
@@ -37,33 +41,34 @@ public class DetailsOfflineActivity extends AppCompatActivity {
 
     private List<Pair<String, String>> trailerList;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_details);
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
+    public OfflineFragment() {
+        // Required empty public constructor
+    }
 
-        Display display = getWindowManager().getDefaultDisplay();
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.fragment_details, container, false);
+
+        Display display = getActivity().getWindowManager().getDefaultDisplay();
         width = Utility.getPosterWidth(display);
         height = Utility.getPosterHeight(display);
-        Utility.setPosterIntoView(this, width, height);
+        Utility.setPosterIntoView(view, width, height);
 
-        movieID = getIntent().getStringExtra(Intent.EXTRA_TEXT);
+        movieID = getArguments().getString(DetailsActivity.bundleTag);
 
-        LayoutInflater inflater =
-                (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        TextView titleView = (TextView) view.findViewById(R.id.details_title);
+        ImageView posterView = (ImageView) view.findViewById(R.id.details_poster);
+        TextView synopsysView = (TextView) view.findViewById(R.id.details_synopsys);
+        CheckBox favouriteView = (CheckBox) view.findViewById(R.id.details_favourite);
+        TextView ratingView = (TextView) view.findViewById(R.id.details_rating);
+        TextView releaseDateView = (TextView) view.findViewById(R.id.details_releasedate);
+        LinearLayout trailersView = (LinearLayout) view.findViewById(R.id.details_trailers);
+        LinearLayout reviewsView = (LinearLayout) view.findViewById(R.id.details_reviews);
 
-        TextView titleView = (TextView) findViewById(R.id.details_title);
-        ImageView posterView = (ImageView) findViewById(R.id.details_poster);
-        TextView synopsysView = (TextView) findViewById(R.id.details_synopsys);
-        CheckBox favouriteView = (CheckBox) findViewById(R.id.details_favourite);
-        TextView ratingView = (TextView) findViewById(R.id.details_rating);
-        TextView releaseDateView = (TextView) findViewById(R.id.details_releasedate);
-        LinearLayout trailersView = (LinearLayout) findViewById(R.id.details_trailers);
-        LinearLayout reviewsView = (LinearLayout) findViewById(R.id.details_reviews);
-
-        MovieDatabase database = new MovieDatabase(this);
+        MovieDatabase database = new MovieDatabase(getContext());
         Query query = Query.select().from(Movie.TABLE).where(Movie.MOVIE_ID.eq(movieID));
         SquidCursor<Movie> cursor = database.query(Movie.class, query);
 
@@ -76,7 +81,7 @@ public class DetailsOfflineActivity extends AppCompatActivity {
                 titleView.setText(movie.getTitle());
                 posterView.setImageBitmap(Utility.loadPosterImage(movieID));
                 synopsysView.setText(movie.getSynopsys());
-                favouriteView.setChecked(Utility.isFavourite(DetailsOfflineActivity.this, movieID));
+                favouriteView.setChecked(Utility.isFavourite(getContext(), movieID));
                 favouriteView.setVisibility(View.VISIBLE);
                 ratingView.setText(movie.getRating().toString());
                 releaseDateView.setText(movie.getReleaseDate());
@@ -143,16 +148,31 @@ public class DetailsOfflineActivity extends AppCompatActivity {
             cursor.close();
         }
 
+
+        return view;
     }
 
 
-    public void favourite(View v) {
-        Utility.setFavourite(DetailsOfflineActivity.this, this, movie, v);
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof OnFragmentInteractionListener) {
+            mListener = (OnFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
     }
 
 
-    public void showTrailer(View view) {
-        Utility.showTrailer(this, trailerList, view);
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
     }
 
+
+    public interface OnFragmentInteractionListener {
+        void onFragmentInteraction(Uri uri);
+    }
 }

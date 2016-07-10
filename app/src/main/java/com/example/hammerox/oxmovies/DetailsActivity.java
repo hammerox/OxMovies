@@ -9,7 +9,9 @@ import android.view.MenuItem;
 import android.view.View;
 
 
-public class DetailsActivity extends AppCompatActivity implements DetailsFragment.OnFragmentInteractionListener{
+public class DetailsActivity extends AppCompatActivity
+        implements DetailsFragment.OnFragmentInteractionListener,
+                    OfflineFragment.OnFragmentInteractionListener {
 
     public static String movieID;
     public static String bundleTag = "movieID";
@@ -22,16 +24,29 @@ public class DetailsActivity extends AppCompatActivity implements DetailsFragmen
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         movieID = getIntent().getStringExtra(Intent.EXTRA_TEXT);
+        int sortOrder = getIntent().getIntExtra(Intent.EXTRA_DOCK_STATE, 0);
 
         if (savedInstanceState == null) {
             Bundle args = new Bundle();
             args.putString(bundleTag, movieID);
 
-            DetailsFragment fragment = new DetailsFragment();
-            fragment.setArguments(args);
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.container_fragment_details, fragment, null)
-                    .commit();
+            switch (sortOrder) {
+                case 0:
+                case 1:
+                    DetailsFragment detailsFrag = new DetailsFragment();
+                    detailsFrag.setArguments(args);
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.container_fragment_details, detailsFrag, null)
+                            .commit();
+                    break;
+                case 2:
+                    OfflineFragment offlineFrag = new OfflineFragment();
+                    offlineFrag.setArguments(args);
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.container_fragment_details, offlineFrag, null)
+                            .commit();
+                    break;
+            }
         }
     }
 

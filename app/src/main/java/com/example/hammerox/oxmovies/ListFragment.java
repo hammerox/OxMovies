@@ -71,19 +71,10 @@ public class ListFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent;
-                switch (sortOrder) {
-                    case 0:
-                    case 1:
-                        intent = new Intent(getContext(), DetailsActivity.class);
-                        intent.putExtra(Intent.EXTRA_TEXT, IDList.get(position));
-                        startActivity(intent);
-                        break;
-                    case 2:
-                        intent = new Intent(getContext(), DetailsOfflineActivity.class);
-                        intent.putExtra(Intent.EXTRA_TEXT, IDList.get(position));
-                        startActivity(intent);
-                        break;
-                }
+                intent = new Intent(getContext(), DetailsActivity.class);
+                intent.putExtra(Intent.EXTRA_TEXT, IDList.get(position));
+                intent.putExtra(Intent.EXTRA_DOCK_STATE, sortOrder);
+                startActivity(intent);
             }
         });
 
