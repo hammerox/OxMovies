@@ -1,4 +1,4 @@
-package com.example.hammerox.oxmovies;
+package com.example.hammerox.oxmovies.tools;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -8,6 +8,8 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 
+import com.example.hammerox.oxmovies.ListFragment;
+import com.example.hammerox.oxmovies.Utility;
 import com.squareup.picasso.Picasso;
 
 public class ImageAdapter extends BaseAdapter {
@@ -25,24 +27,24 @@ public class ImageAdapter extends BaseAdapter {
         if (convertView == null) {
             imageView = new ImageView(mContext);
             imageView.setLayoutParams(new GridView.LayoutParams(
-                    MainActivity.width,
-                    MainActivity.height));
+                    ListFragment.width,
+                    ListFragment.height));
         } else {
             imageView = (ImageView) convertView;
         }
 
-        switch (MainActivity.sortOrder) {
+        switch (ListFragment.sortOrder) {
             case 0:
             case 1:
                 Picasso
                         .with(mContext)
-                        .load(MainActivity.posterList.get(position))
+                        .load(ListFragment.posterList.get(position))
                         .fit()
                         .centerCrop()
                         .into(imageView);
                 break;
             case 2:
-                String id = MainActivity.IDList.get(position);
+                String id = ListFragment.IDList.get(position);
                 Bitmap bmp = Utility.loadPosterImage(id);
                 imageView.setImageBitmap(bmp);
                 break;
@@ -58,24 +60,24 @@ public class ImageAdapter extends BaseAdapter {
 
     @Override
     public Object getItem(int position) {
-        switch (MainActivity.sortOrder) {
+        switch (ListFragment.sortOrder) {
             case 0:
             case 1:
-                return MainActivity.posterList.get(position);
+                return ListFragment.posterList.get(position);
             case 2:
-                return MainActivity.IDList.get(position);
+                return ListFragment.IDList.get(position);
         }
         return 0;
     }
 
     @Override
     public int getCount() {
-        switch (MainActivity.sortOrder) {
+        switch (ListFragment.sortOrder) {
             case 0:
             case 1:
-                return MainActivity.posterList.size();
+                return ListFragment.posterList.size();
             case 2:
-                return MainActivity.IDList.size();
+                return ListFragment.IDList.size();
         }
         return 0;
     }

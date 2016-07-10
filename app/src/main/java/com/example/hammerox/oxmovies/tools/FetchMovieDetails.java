@@ -1,4 +1,4 @@
-package com.example.hammerox.oxmovies;
+package com.example.hammerox.oxmovies.tools;
 
 import android.app.Activity;
 import android.content.Context;
@@ -13,6 +13,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.hammerox.oxmovies.DetailsActivity;
+import com.example.hammerox.oxmovies.R;
+import com.example.hammerox.oxmovies.Utility;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;

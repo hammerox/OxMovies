@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.example.hammerox.oxmovies.data.Movie;
+import com.example.hammerox.oxmovies.tools.FetchMovieDetails;
 
 import java.util.List;
 

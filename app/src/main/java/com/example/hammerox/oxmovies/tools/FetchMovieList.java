@@ -1,9 +1,12 @@
-package com.example.hammerox.oxmovies;
+package com.example.hammerox.oxmovies.tools;
 
 import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
+
+import com.example.hammerox.oxmovies.ListFragment;
+import com.example.hammerox.oxmovies.Utility;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -27,7 +30,7 @@ public class FetchMovieList extends AsyncTask<Integer, Void, String> {
     protected void onPostExecute(String s) {
         super.onPostExecute(s);
 
-        MainActivity.clearLists();
+        ListFragment.clearLists();
 
         if (s != null) {
 
@@ -39,7 +42,7 @@ public class FetchMovieList extends AsyncTask<Integer, Void, String> {
                 for (int i = 0; i < size; i++) {
                     String movieId = results.getJSONObject(i).getString("id");
                     Log.d("movie", movieId);
-                    MainActivity.IDList.add(movieId);
+                    ListFragment.IDList.add(movieId);
 
                     String moviePoster = results.getJSONObject(i).getString("poster_path");
                     Log.d("movie", moviePoster);
@@ -52,11 +55,11 @@ public class FetchMovieList extends AsyncTask<Integer, Void, String> {
                             .appendPath("w185")
                             .appendPath(moviePoster.replace("/", ""));
 
-                    MainActivity.posterList.add(builder.build().toString());
+                    ListFragment.posterList.add(builder.build().toString());
                 }
 
-                MainActivity.imageAdapter = new ImageAdapter(mContext);
-                MainActivity.gridView.setAdapter(MainActivity.imageAdapter);
+                ListFragment.imageAdapter = new ImageAdapter(mContext);
+                ListFragment.gridView.setAdapter(ListFragment.imageAdapter);
 
             } catch (JSONException e) {
                 Log.e("JSONException", e.toString());
