@@ -2,27 +2,21 @@ package com.example.hammerox.oxmovies;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Point;
-import android.net.Uri;
 import android.support.v4.util.Pair;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Display;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.hammerox.oxmovies.data.Movie;
 import com.example.hammerox.oxmovies.data.MovieDatabase;
 import com.yahoo.squidb.data.SquidCursor;
-import com.yahoo.squidb.sql.Criterion;
 import com.yahoo.squidb.sql.Query;
 
 import org.json.JSONArray;
@@ -49,7 +43,10 @@ public class DetailsOfflineActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        setPosterDimensions();
+        Display display = getWindowManager().getDefaultDisplay();
+        width = Utility.getPosterWidth(display);
+        height = Utility.getPosterHeight(display);
+        Utility.setPosterIntoView(this, width, height);
 
         movieID = getIntent().getStringExtra(Intent.EXTRA_TEXT);
 
@@ -149,59 +146,12 @@ public class DetailsOfflineActivity extends AppCompatActivity {
 
 
     public void favourite(View v) {
-        CheckBox box = (CheckBox) v;
-        MovieDatabase db = new MovieDatabase(this);
-
-        if (box.isChecked()) {
-            db.createNew(movie);
-            ImageView posterView = (ImageView) findViewById(R.id.details_poster);
-            Utility.savePosterImage(posterView, movieID);
-            Toast.makeText(this, "Added to favourites", Toast.LENGTH_LONG).show();
-        } else {
-            Criterion criteria = Movie.MOVIE_ID.eq(movie.getMovieId());
-            db.deleteWhere(Movie.class, criteria);
-            Utility.removePosterImage(movieID);
-            Toast.makeText(this, "Removed from favourites", Toast.LENGTH_LONG).show();
-        }
+        Utility.setFavourite(DetailsOfflineActivity.this, this, movie, v);
     }
 
 
     public void showTrailer(View view) {
-        TextView titleView = (TextView) view.findViewById(R.id.item_trailer_title);
-        String title = titleView.getText().toString();
-        String key = null;
-
-        for (Pair<String, String> trailer : trailerList) {
-            if (trailer.first.matches(title)) {
-                key = trailer.second;
-                break;
-            }
-        }
-
-        Uri.Builder builder = new Uri.Builder();
-        builder.scheme("http")
-                .authority("www.youtube.com")
-                .appendPath("watch")
-                .appendQueryParameter("v", key);
-
-        Intent intent = new Intent(Intent.ACTION_VIEW, builder.build());
-        if (intent.resolveActivity(getPackageManager()) != null) {
-            startActivity(intent);
-        }
-
+        Utility.showTrailer(this, trailerList, view);
     }
 
-
-    public void setPosterDimensions() {
-        Display display = getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        width = size.x / 2;
-        height = width * 278/185;
-
-        ImageView posterView = (ImageView) findViewById(R.id.details_poster);
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, height);
-        params.gravity = Gravity.CENTER;
-        posterView.setLayoutParams(params);
-    }
 }

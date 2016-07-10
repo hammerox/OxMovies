@@ -3,7 +3,6 @@ package com.example.hammerox.oxmovies;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Point;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v4.util.Pair;
@@ -12,7 +11,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,32 +18,19 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.hammerox.oxmovies.data.Movie;
-import com.example.hammerox.oxmovies.data.MovieDatabase;
 import com.squareup.picasso.Picasso;
-import com.yahoo.squidb.data.SquidCursor;
-import com.yahoo.squidb.sql.Criterion;
-import com.yahoo.squidb.sql.Query;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DetailsActivity extends AppCompatActivity {
-
-    private final String STRING_SEPARATOR = "###";
 
     String movieID;
     private Movie movie = new Movie();
@@ -62,7 +47,10 @@ public class DetailsActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        setPosterDimensions();
+        Display display = getWindowManager().getDefaultDisplay();
+        width = Utility.getPosterWidth(display);
+        height = Utility.getPosterHeight(display);
+        Utility.setPosterIntoView(this, width, height);
 
         movieID = getIntent().getStringExtra(Intent.EXTRA_TEXT);
 
@@ -83,121 +71,14 @@ public class DetailsActivity extends AppCompatActivity {
 
 
     public void favourite(View v) {
-        CheckBox box = (CheckBox) v;
-        MovieDatabase db = new MovieDatabase(this);
-
-        if (box.isChecked()) {
-            db.createNew(movie);
-            ImageView posterView = (ImageView) findViewById(R.id.details_poster);
-            Utility.savePosterImage(posterView, movieID);
-            Toast.makeText(this, "Added to favourites", Toast.LENGTH_LONG).show();
-        } else {
-            Criterion criteria = Movie.MOVIE_ID.eq(movie.getMovieId());
-            db.deleteWhere(Movie.class, criteria);
-            Utility.removePosterImage(movieID);
-            Toast.makeText(this, "Removed from favourites", Toast.LENGTH_LONG).show();
-        }
+        Utility.setFavourite(DetailsActivity.this, this, movie, v);
     }
 
 
     public class FetchMovieDetails extends AsyncTask<String, Void, String> {
         @Override
         protected String doInBackground(String... params) {
-
-            HttpURLConnection urlConnection = null;
-            BufferedReader reader = null;
-            String movieDetailsJson = null;
-
-            try {
-                String detailsPath = detailsPath(params[0]);
-                URL url = new URL(detailsPath);
-
-                // Create the request to TheMovieDatabase, and open the connection
-                urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setRequestMethod("GET");
-                urlConnection.connect();
-
-                // Read the input stream into a String
-                InputStream inputStream = urlConnection.getInputStream();
-                StringBuffer buffer = new StringBuffer();
-                if (inputStream == null) {
-                    // Nothing to do.
-                    return null;
-                }
-                reader = new BufferedReader(new InputStreamReader(inputStream));
-
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
-                    // But it does make debugging a *lot* easier if you print out the completed
-                    // buffer for debugging.
-                    buffer.append(line + "\n");
-                }
-
-                if (buffer.length() == 0) {
-                    // Stream was empty.  No point in parsing.
-                    return null;
-                }
-
-                movieDetailsJson = buffer.toString();
-
-                // Do the same thing for trailers URL.
-                String trailersPath = trailersPath(params[0]);
-                url = new URL(trailersPath);
-
-                urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setRequestMethod("GET");
-                urlConnection.connect();
-
-                inputStream = urlConnection.getInputStream();
-                buffer = new StringBuffer();
-                reader = new BufferedReader(new InputStreamReader(inputStream));
-
-                while ((line = reader.readLine()) != null) {
-                    buffer.append(line + "\n");
-                }
-
-                movieDetailsJson = movieDetailsJson + STRING_SEPARATOR + buffer.toString();
-
-                // Do the same thing for reviews URL.
-                String reviewsPath = reviewsPath(params[0]);
-                url = new URL(reviewsPath);
-
-                urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setRequestMethod("GET");
-                urlConnection.connect();
-
-                inputStream = urlConnection.getInputStream();
-                buffer = new StringBuffer();
-                reader = new BufferedReader(new InputStreamReader(inputStream));
-
-                while ((line = reader.readLine()) != null) {
-                    buffer.append(line + "\n");
-                }
-
-                movieDetailsJson = movieDetailsJson + STRING_SEPARATOR + buffer.toString();
-
-                Log.d("JsonString", movieDetailsJson);
-
-            } catch (IOException e) {
-                Log.e("PlaceholderFragment", "Error ", e);
-                // If the code didn't successfully get the weather data, there's no point in attemping
-                // to parse it.
-                return null;
-            } finally{
-                if (urlConnection != null) {
-                    urlConnection.disconnect();
-                }
-                if (reader != null) {
-                    try {
-                        reader.close();
-                    } catch (final IOException e) {
-                        Log.e("PlaceholderFragment", "Error closing stream", e);
-                    }
-                }
-            }
-
-            return movieDetailsJson;
+            return Utility.fetchDetailsJson(params);
         }
 
         @Override
@@ -209,6 +90,7 @@ public class DetailsActivity extends AppCompatActivity {
 
             try {
                 // Get respective JSON from string
+                String STRING_SEPARATOR = Utility.STRING_SEPARATOR;
                 JSONObject detailsJSON = new JSONObject(s.split(STRING_SEPARATOR)[0]);
                 JSONObject trailersJSON = new JSONObject(s.split(STRING_SEPARATOR)[1]);
                 JSONObject reviewsJSON = new JSONObject(s.split(STRING_SEPARATOR)[2]);
@@ -324,47 +206,6 @@ public class DetailsActivity extends AppCompatActivity {
     }
 
 
-    public String detailsPath(String movieID) {
-        Uri.Builder builder = new Uri.Builder();
-        builder.scheme("https")
-                .authority("api.themoviedb.org")
-                .appendPath("3")
-                .appendPath("movie")
-                .appendPath(movieID)
-                .appendQueryParameter("api_key", MainActivity.API_KEY);
-
-        return builder.build().toString();
-    }
-
-
-    public String trailersPath(String movieID) {
-        Uri.Builder builder = new Uri.Builder();
-        builder.scheme("https")
-                .authority("api.themoviedb.org")
-                .appendPath("3")
-                .appendPath("movie")
-                .appendPath(movieID)
-                .appendPath("videos")
-                .appendQueryParameter("api_key", MainActivity.API_KEY);
-
-        return builder.build().toString();
-    }
-
-
-    public String reviewsPath(String movieID) {
-        Uri.Builder builder = new Uri.Builder();
-        builder.scheme("https")
-                .authority("api.themoviedb.org")
-                .appendPath("3")
-                .appendPath("movie")
-                .appendPath(movieID)
-                .appendPath("reviews")
-                .appendQueryParameter("api_key", MainActivity.API_KEY);
-
-        return builder.build().toString();
-    }
-
-
     public String posterURL(String path) {
         Uri.Builder builder = new Uri.Builder();
         builder.scheme("http")
@@ -378,42 +219,7 @@ public class DetailsActivity extends AppCompatActivity {
     }
 
 
-    public void setPosterDimensions() {
-        Display display = getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        width = size.x / 2;
-        height = width * 278/185;
-
-        ImageView posterView = (ImageView) findViewById(R.id.details_poster);
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, height);
-        params.gravity = Gravity.CENTER;
-        posterView.setLayoutParams(params);
-    }
-
-
     public void showTrailer(View view) {
-        TextView titleView = (TextView) view.findViewById(R.id.item_trailer_title);
-        String title = titleView.getText().toString();
-        String key = null;
-
-        for (Pair<String, String> trailer : trailerList) {
-            if (trailer.first.matches(title)) {
-                key = trailer.second;
-                break;
-            }
-        }
-
-        Uri.Builder builder = new Uri.Builder();
-        builder.scheme("http")
-                .authority("www.youtube.com")
-                .appendPath("watch")
-                .appendQueryParameter("v", key);
-
-        Intent intent = new Intent(Intent.ACTION_VIEW, builder.build());
-        if (intent.resolveActivity(getPackageManager()) != null) {
-            startActivity(intent);
-        }
-
+        Utility.showTrailer(this, trailerList, view);
     }
 }
