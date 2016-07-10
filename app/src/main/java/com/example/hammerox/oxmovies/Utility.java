@@ -2,6 +2,7 @@ package com.example.hammerox.oxmovies;
 
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -171,6 +172,14 @@ public class Utility {
     public static int getPosterHeight(Display display) {
         int width = getPosterWidth(display);
         return width * 278/185;
+    }
+
+
+    public static void setPosterIntoView(View view, int width, int height) {
+        ImageView posterView = (ImageView) view.findViewById(R.id.details_poster);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, height);
+        params.gravity = Gravity.CENTER;
+        posterView.setLayoutParams(params);
     }
 
 

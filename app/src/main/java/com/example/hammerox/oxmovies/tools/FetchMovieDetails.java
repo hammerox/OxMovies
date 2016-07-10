@@ -14,6 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.hammerox.oxmovies.DetailsActivity;
+import com.example.hammerox.oxmovies.DetailsFragment;
 import com.example.hammerox.oxmovies.R;
 import com.example.hammerox.oxmovies.Utility;
 import com.squareup.picasso.Picasso;
@@ -87,14 +88,14 @@ public class FetchMovieDetails extends AsyncTask<String, Void, String> {
             int trailersCount = allTrailers.length();
             if (trailersCount > 0) {
 
-                DetailsActivity.trailerList = new ArrayList<>();
+                DetailsFragment.trailerList = new ArrayList<>();
 
                 for (int i = 0; i < trailersCount; i++) {
                     JSONObject trailerObject = allTrailers.getJSONObject(i);
                     String trailerTitle = trailerObject.getString("name");
                     String trailerKey = trailerObject.getString("key");
                     Pair<String, String> trailerPair = new Pair<>(trailerTitle, trailerKey);
-                    DetailsActivity.trailerList.add(trailerPair);
+                    DetailsFragment.trailerList.add(trailerPair);
 
                     View custom = inflater.inflate(R.layout.item_trailer, null);
 
@@ -134,14 +135,14 @@ public class FetchMovieDetails extends AsyncTask<String, Void, String> {
             }
 
             // Set up Movie object
-            DetailsActivity.movie.setTitle(title);
-            DetailsActivity.movie.setMovieId(Integer.parseInt(DetailsActivity.movieID));
-            DetailsActivity.movie.setPosterUri(poster);
-            DetailsActivity.movie.setSynopsys(synopsys);
-            DetailsActivity.movie.setRating(Double.parseDouble(rating));
-            DetailsActivity.movie.setReleaseDate(releaseDate);
-            DetailsActivity.movie.setTrailersJson(s.split(STRING_SEPARATOR)[1]);
-            DetailsActivity.movie.setReviewsJson(s.split(STRING_SEPARATOR)[2]);
+            DetailsFragment.movie.setTitle(title);
+            DetailsFragment.movie.setMovieId(Integer.parseInt(DetailsActivity.movieID));
+            DetailsFragment.movie.setPosterUri(poster);
+            DetailsFragment.movie.setSynopsys(synopsys);
+            DetailsFragment.movie.setRating(Double.parseDouble(rating));
+            DetailsFragment.movie.setReleaseDate(releaseDate);
+            DetailsFragment.movie.setTrailersJson(s.split(STRING_SEPARATOR)[1]);
+            DetailsFragment.movie.setReviewsJson(s.split(STRING_SEPARATOR)[2]);
 
         } catch (JSONException e) {
             Log.e("JSONException", e.toString());
