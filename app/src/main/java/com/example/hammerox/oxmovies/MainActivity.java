@@ -94,7 +94,6 @@ public class MainActivity extends AppCompatActivity {
 
         switch (id) {
             case R.id.action_refresh:
-                setSortOrder();
                 updateGridContent();
                 return true;
             case R.id.action_settings:
@@ -103,18 +102,6 @@ public class MainActivity extends AppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-
-    public void setSortOrder() {
-        SharedPreferences prefs = PreferenceManager
-                .getDefaultSharedPreferences(getApplicationContext());
-
-        String sortOrderString = prefs.getString(
-                getString(R.string.pref_sort_order_key),
-                getString(R.string.pref_sort_order_default));
-        sortOrder = Integer.valueOf(sortOrderString);
-        Log.d("sortOrder", String.valueOf(sortOrder));
     }
 
 
@@ -130,6 +117,18 @@ public class MainActivity extends AppCompatActivity {
                 getFavouriteGrid();
                 break;
         }
+    }
+
+
+    public void setSortOrder() {
+        SharedPreferences prefs = PreferenceManager
+                .getDefaultSharedPreferences(getApplicationContext());
+
+        String sortOrderString = prefs.getString(
+                getString(R.string.pref_sort_order_key),
+                getString(R.string.pref_sort_order_default));
+        sortOrder = Integer.valueOf(sortOrderString);
+        Log.d("sortOrder", String.valueOf(sortOrder));
     }
 
 
@@ -163,6 +162,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    public void clearLists() {
+        if (IDList == null) {
+            IDList = new ArrayList<>();
+        } else {
+            IDList.clear();
+        }
+
+        if (posterList == null) {
+            posterList = new ArrayList<>();
+        } else {
+            posterList.clear();
+        }
+    }
+
+
     public class FetchMovieList extends AsyncTask<Integer, Void, String> {
 
         @Override
@@ -179,7 +193,8 @@ public class MainActivity extends AppCompatActivity {
             if (s != null) {
 
                 try {
-                    JSONArray results = getListFromJson(s);
+                    JSONObject jsonObject = new JSONObject(s);
+                    JSONArray results = jsonObject.getJSONArray("results");
                     int size = results.length();
 
                     for (int i = 0; i < size; i++) {
@@ -212,12 +227,6 @@ public class MainActivity extends AppCompatActivity {
             }
 
         }
-    }
-
-
-    public JSONArray getListFromJson(String s) throws JSONException {
-        JSONObject jsonObject = new JSONObject(s);
-        return jsonObject.getJSONArray("results");
     }
 
 
@@ -284,21 +293,6 @@ public class MainActivity extends AppCompatActivity {
            return 0;
        }
    }
-
-
-    public void clearLists() {
-        if (IDList == null) {
-            IDList = new ArrayList<>();
-        } else {
-            IDList.clear();
-        }
-
-        if (posterList == null) {
-            posterList = new ArrayList<>();
-        } else {
-            posterList.clear();
-        }
-    }
 
 
 }

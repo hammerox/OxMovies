@@ -75,6 +75,11 @@ public class DetailsActivity extends AppCompatActivity {
     }
 
 
+    public void showTrailer(View view) {
+        Utility.showTrailer(this, trailerList, view);
+    }
+
+
     public class FetchMovieDetails extends AsyncTask<String, Void, String> {
         @Override
         protected String doInBackground(String... params) {
@@ -179,7 +184,6 @@ public class DetailsActivity extends AppCompatActivity {
                 movie.setTitle(title);
                 movie.setMovieId(Integer.parseInt(movieID));
                 movie.setPosterUri(poster);
-                movie.setPosterImage(getPosterImage(posterView));
                 movie.setSynopsys(synopsys);
                 movie.setRating(Double.parseDouble(rating));
                 movie.setReleaseDate(releaseDate);
@@ -195,17 +199,6 @@ public class DetailsActivity extends AppCompatActivity {
     }
 
 
-    public byte[] getPosterImage(ImageView view){
-        view.setDrawingCacheEnabled(true);
-        view.buildDrawingCache();
-        Bitmap bitmap = view.getDrawingCache();
-
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-        return stream.toByteArray();
-    }
-
-
     public String posterURL(String path) {
         Uri.Builder builder = new Uri.Builder();
         builder.scheme("http")
@@ -218,8 +211,4 @@ public class DetailsActivity extends AppCompatActivity {
         return builder.build().toString();
     }
 
-
-    public void showTrailer(View view) {
-        Utility.showTrailer(this, trailerList, view);
-    }
 }

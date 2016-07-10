@@ -6,6 +6,7 @@ import android.support.v4.util.Pair;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -137,7 +138,7 @@ public class DetailsOfflineActivity extends AppCompatActivity {
             }
 
         } catch (JSONException e) {
-
+            Log.e(JSONException.class.getName(), e.toString());
         } finally {
             cursor.close();
         }
