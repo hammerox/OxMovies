@@ -2,9 +2,6 @@ package com.example.hammerox.oxmovies;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,35 +10,28 @@ import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.GridView;
-import android.widget.ImageView;
 
 import com.example.hammerox.oxmovies.data.Movie;
 import com.example.hammerox.oxmovies.data.MovieDatabase;
-import com.squareup.picasso.Picasso;
 import com.yahoo.squidb.data.SquidCursor;
 import com.yahoo.squidb.sql.Query;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private int sortOrder = 0;
+    public static int sortOrder = 0;
 
-    private GridView gridView = null;
-    private ImageAdapter imageAdapter = null;
-    private List<String> IDList = null;
-    private List<String> posterList = null;
-    private int width = 0;
-    private int height = 0;
+    public static GridView gridView = null;
+    public static ImageAdapter imageAdapter = null;
+    public static List<String> IDList = null;
+    public static List<String> posterList = null;
+
+    public static int width = 0;
+    public static int height = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
         switch (sortOrder) {
             case 0:
             case 1:
-                new FetchMovieList().execute(sortOrder);
+                new FetchMovieList(this).execute(sortOrder);
                 break;
             case 2:
                 getFavouriteGrid();
@@ -152,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
                     IDList.add(movieId);
                 }
 
-                imageAdapter = new ImageAdapter();
+                imageAdapter = new ImageAdapter(this);
                 gridView.setAdapter(imageAdapter);
             } finally {
                 cursor.close();
@@ -162,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void clearLists() {
+    public static void clearLists() {
         if (IDList == null) {
             IDList = new ArrayList<>();
         } else {
@@ -175,124 +165,4 @@ public class MainActivity extends AppCompatActivity {
             posterList.clear();
         }
     }
-
-
-    public class FetchMovieList extends AsyncTask<Integer, Void, String> {
-
-        @Override
-        protected String doInBackground(Integer... params) {
-            return Utility.fetchListJson(params);
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-
-            clearLists();
-
-            if (s != null) {
-
-                try {
-                    JSONObject jsonObject = new JSONObject(s);
-                    JSONArray results = jsonObject.getJSONArray("results");
-                    int size = results.length();
-
-                    for (int i = 0; i < size; i++) {
-                        String movieId = results.getJSONObject(i).getString("id");
-                        Log.d("movie", movieId);
-                        IDList.add(movieId);
-
-                        String moviePoster = results.getJSONObject(i).getString("poster_path");
-                        Log.d("movie", moviePoster);
-
-                        Uri.Builder builder = new Uri.Builder();
-                        builder.scheme("http")
-                                .authority("image.tmdb.org")
-                                .appendPath("t")
-                                .appendPath("p")
-                                .appendPath("w185")
-                                .appendPath(moviePoster.replace("/", ""));
-
-                        posterList.add(builder.build().toString());
-                    }
-
-                    imageAdapter = new ImageAdapter();
-                    gridView.setAdapter(imageAdapter);
-
-                } catch (JSONException e) {
-                    Log.e("JSONException", e.toString());
-                } catch (NullPointerException e) {
-                    Log.e("NullPointerException", e.toString());
-                }
-            }
-
-        }
-    }
-
-
-   public class ImageAdapter extends BaseAdapter {
-       @Override
-       public View getView(int position, View convertView, ViewGroup parent) {
-
-           ImageView imageView;
-           if (convertView == null) {
-               imageView = new ImageView(MainActivity.this);
-               imageView.setLayoutParams(new GridView.LayoutParams(
-                       width,
-                       height));
-           } else {
-               imageView = (ImageView) convertView;
-           }
-
-           switch (sortOrder) {
-               case 0:
-               case 1:
-                   Picasso
-                       .with(MainActivity.this)
-                       .load(posterList.get(position))
-                       .fit()
-                       .centerCrop()
-                       .into(imageView);
-                   break;
-               case 2:
-                   String id = IDList.get(position);
-                   Bitmap bmp = Utility.loadPosterImage(id);
-                   imageView.setImageBitmap(bmp);
-                   break;
-           }
-
-           return imageView;
-       }
-
-       @Override
-       public long getItemId(int position) {
-           return 0;
-       }
-
-       @Override
-       public Object getItem(int position) {
-           switch (sortOrder) {
-               case 0:
-               case 1:
-                   return posterList.get(position);
-               case 2:
-                   return IDList.get(position);
-           }
-           return 0;
-       }
-
-       @Override
-       public int getCount() {
-           switch (sortOrder) {
-               case 0:
-               case 1:
-                   return posterList.size();
-               case 2:
-                   return IDList.size();
-           }
-           return 0;
-       }
-   }
-
-
 }
