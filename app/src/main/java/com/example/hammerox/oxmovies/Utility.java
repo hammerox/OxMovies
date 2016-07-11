@@ -42,7 +42,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 
 public class Utility {
@@ -143,18 +142,7 @@ public class Utility {
     }
 
 
-    public static void showTrailer(Context context, List<Pair<String, String>> trailerList, View view) {
-        TextView titleView = (TextView) view.findViewById(R.id.item_trailer_title);
-        String title = titleView.getText().toString();
-        String key = null;
-
-        for (Pair<String, String> trailer : trailerList) {
-            if (trailer.first.matches(title)) {
-                key = trailer.second;
-                break;
-            }
-        }
-
+    public static void showTrailer(Context context, String key) {
         Uri.Builder builder = new Uri.Builder();
         builder.scheme("http")
                 .authority("www.youtube.com")
@@ -463,10 +451,10 @@ public class Utility {
     }
 
 
-    public static void setTrailerView(Context context,
+    public static void setTrailerView(final Context context,
                                       JSONObject trailersJSON,
-                                      List<Pair<String, String>> trailerList,
-                                      LinearLayout trailersView) {
+                                      final List<Pair<String, String>> trailerList,
+                                      final LinearLayout trailersView) {
         try {
             LayoutInflater inflater = LayoutInflater.from(context);
             JSONArray allTrailers = trailersJSON.getJSONArray("results");
@@ -474,16 +462,22 @@ public class Utility {
             int trailersCount = allTrailers.length();
             if (trailersCount > 0) {
 
-                trailerList = new ArrayList<>();
+                trailerList.clear();
 
                 for (int i = 0; i < trailersCount; i++) {
                     JSONObject trailerObject = allTrailers.getJSONObject(i);
                     String trailerTitle = trailerObject.getString("name");
-                    String trailerKey = trailerObject.getString("key");
+                    final String trailerKey = trailerObject.getString("key");
                     Pair<String, String> trailerPair = new Pair<>(trailerTitle, trailerKey);
                     trailerList.add(trailerPair);
 
                     View custom = inflater.inflate(R.layout.item_trailer, null);
+                    custom.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Utility.showTrailer(context, trailerKey);
+                        }
+                    });
 
                     TextView trailerTitleView = (TextView) custom.findViewById(R.id.item_trailer_title);
                     trailerTitleView.setText(trailerTitle);

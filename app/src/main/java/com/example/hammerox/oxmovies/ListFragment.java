@@ -3,7 +3,6 @@ package com.example.hammerox.oxmovies;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
@@ -19,6 +18,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.example.hammerox.oxmovies.data.Movie;
 import com.example.hammerox.oxmovies.data.MovieDatabase;
@@ -223,6 +224,9 @@ public class ListFragment extends Fragment {
     public void getFavouriteGrid() {
         clearLists();
 
+        TextView noListText = (TextView) getView().findViewById(R.id.movielist_nolist_text);
+        ProgressBar loadIcon = (ProgressBar) getView().findViewById(R.id.movielist_load_icon);
+
         MovieDatabase database = new MovieDatabase(getContext());
         int size = database.countAll(Movie.class);
         Log.d("database", "size: " + size);
@@ -240,11 +244,17 @@ public class ListFragment extends Fragment {
                     IDList.add(movieId);
                 }
 
+                noListText.setVisibility(View.GONE);
                 imageAdapter = new ImageAdapter(getContext());
                 gridView.setAdapter(imageAdapter);
+
             } finally {
                 cursor.close();
             }
+
+        } else {
+            loadIcon.setVisibility(View.GONE);
+            noListText.setVisibility(View.VISIBLE);
         }
 
     }

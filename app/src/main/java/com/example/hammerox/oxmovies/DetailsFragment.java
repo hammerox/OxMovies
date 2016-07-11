@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import com.example.hammerox.oxmovies.data.Movie;
 import com.example.hammerox.oxmovies.tools.FetchMovieDetails;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -26,7 +27,7 @@ public class DetailsFragment extends Fragment {
     private int width = 0;
     private int height = 0;
 
-    public static List<Pair<String, String>> trailerList;
+    private List<Pair<String, String>> trailerList;
 
 
     public DetailsFragment() {
@@ -47,7 +48,11 @@ public class DetailsFragment extends Fragment {
 
         movieID = getArguments().getString(MainActivity.TAG_BUNDLE);
 
-        new FetchMovieDetails(getContext(), getActivity()).execute(movieID);
+        if (trailerList == null) {
+            trailerList = new ArrayList<>();
+            new FetchMovieDetails(getContext(), getActivity(), trailerList)
+                    .execute(movieID);
+        }
         return view;
     }
 

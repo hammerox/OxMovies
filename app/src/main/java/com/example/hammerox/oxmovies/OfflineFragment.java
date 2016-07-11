@@ -17,12 +17,14 @@ import android.widget.TextView;
 
 import com.example.hammerox.oxmovies.data.Movie;
 import com.example.hammerox.oxmovies.data.MovieDatabase;
+import com.example.hammerox.oxmovies.tools.FetchMovieDetails;
 import com.yahoo.squidb.data.SquidCursor;
 import com.yahoo.squidb.sql.Query;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -53,6 +55,10 @@ public class OfflineFragment extends Fragment {
         width = Utility.getPosterWidth(display);
         height = Utility.getPosterHeight(display);
         Utility.setPosterIntoView(view, width, height);
+
+        if (trailerList == null) {
+            trailerList = new ArrayList<>();
+        }
 
         if (getArguments() != null ) {
             movieID = getArguments().getString(MainActivity.TAG_BUNDLE);

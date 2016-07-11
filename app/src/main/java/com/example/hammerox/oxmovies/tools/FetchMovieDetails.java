@@ -13,26 +13,28 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.example.hammerox.oxmovies.DetailsActivity;
 import com.example.hammerox.oxmovies.DetailsFragment;
 import com.example.hammerox.oxmovies.R;
 import com.example.hammerox.oxmovies.Utility;
 import com.squareup.picasso.Picasso;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
+
 
 public class FetchMovieDetails extends AsyncTask<String, Void, String> {
 
     private Context mContext;
     private Activity mActivity;
+    private List<Pair<String, String>> trailerList;
 
-    public FetchMovieDetails(Context context, Activity activity) {
+    public FetchMovieDetails(Context context, Activity activity, List<Pair<String, String>> trailerList) {
         mContext = context;
         mActivity = activity;
+        this.trailerList = trailerList;
     }
 
     @Override
@@ -43,9 +45,6 @@ public class FetchMovieDetails extends AsyncTask<String, Void, String> {
     @Override
     protected void onPostExecute(String s) {
         super.onPostExecute(s);
-
-        LayoutInflater inflater =
-                (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         try {
             // Get respective JSON from string
@@ -89,7 +88,7 @@ public class FetchMovieDetails extends AsyncTask<String, Void, String> {
             });
 
             // Set up trailers
-            Utility.setTrailerView(mContext, trailersJSON, DetailsFragment.trailerList, trailersView);
+            Utility.setTrailerView(mContext, trailersJSON, trailerList, trailersView);
 
             // Set up reviews
             Utility.setReviewsView(mContext, reviewsJSON, reviewsView);

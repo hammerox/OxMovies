@@ -66,11 +66,6 @@ public class DetailsActivity extends AppCompatActivity
     }
 
 
-    public void showTrailer(View view) {
-        Utility.showTrailer(this, DetailsFragment.trailerList, view);
-    }
-
-
     @Override
     public void onFragmentInteraction(Uri uri) {
 

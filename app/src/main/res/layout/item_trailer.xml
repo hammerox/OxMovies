@@ -4,7 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:clickable="true"
-    android:onClick="showTrailer"
     android:background="@android:drawable/list_selector_background"
     android:minHeight="?android:listPreferredItemHeight">
 
