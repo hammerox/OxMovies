@@ -45,7 +45,7 @@ public class DetailsFragment extends Fragment {
         height = Utility.getPosterHeight(display);
         Utility.setPosterIntoView(view, width, height);
 
-        movieID = getArguments().getString(DetailsActivity.bundleTag);
+        movieID = getArguments().getString(MainActivity.TAG_BUNDLE);
 
         new FetchMovieDetails(getContext(), getActivity()).execute(movieID);
         return view;

@@ -73,11 +73,15 @@ public class ListFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 mPosition = position;
 
-                Intent intent;
-                intent = new Intent(getContext(), DetailsActivity.class);
-                intent.putExtra(Intent.EXTRA_TEXT, IDList.get(position));
-                intent.putExtra(Intent.EXTRA_DOCK_STATE, sortOrder);
-                startActivity(intent);
+                if (mTwoPane) {
+                    mListener.changeDetails(IDList.get(position), sortOrder);
+                } else {
+                    Intent intent;
+                    intent = new Intent(getContext(), DetailsActivity.class);
+                    intent.putExtra(Intent.EXTRA_TEXT, IDList.get(position));
+                    intent.putExtra(Intent.EXTRA_DOCK_STATE, sortOrder);
+                    startActivity(intent);
+                }
             }
         });
 
@@ -185,7 +189,7 @@ public class ListFragment extends Fragment {
 
 
     public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(Uri uri);
+        void changeDetails(String movieID, int sortOrder);
     }
 
 

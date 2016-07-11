@@ -90,7 +90,7 @@ public class FetchMovieDetails extends AsyncTask<String, Void, String> {
 
             // Set up Movie object
             DetailsFragment.movie.setTitle(title);
-            DetailsFragment.movie.setMovieId(Integer.parseInt(DetailsActivity.movieID));
+            DetailsFragment.movie.setMovieId(Integer.parseInt(DetailsFragment.movieID));
             DetailsFragment.movie.setPosterUri(poster);
             DetailsFragment.movie.setSynopsys(synopsys);
             DetailsFragment.movie.setRating(Double.parseDouble(rating));

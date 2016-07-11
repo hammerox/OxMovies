@@ -58,7 +58,7 @@ public class OfflineFragment extends Fragment {
         Utility.setPosterIntoView(view, width, height);
 
         if (getArguments() != null ) {
-            movieID = getArguments().getString(DetailsActivity.bundleTag);
+            movieID = getArguments().getString(MainActivity.TAG_BUNDLE);
 
             TextView titleView = (TextView) view.findViewById(R.id.details_title);
             ImageView posterView = (ImageView) view.findViewById(R.id.details_poster);

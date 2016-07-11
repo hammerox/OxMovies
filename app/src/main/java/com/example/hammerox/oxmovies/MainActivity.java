@@ -13,6 +13,7 @@ public class MainActivity extends AppCompatActivity
                 OfflineFragment.OnFragmentInteractionListener {
 
     public static final String KEY_TWO_PANE = "twoPane";
+    public static final String TAG_BUNDLE = "movieID";
     public static boolean mTwoPane;
 
     @Override
@@ -52,6 +53,34 @@ public class MainActivity extends AppCompatActivity
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+
+    @Override
+    public void changeDetails(String movieID, int sortOrder) {
+        switch (sortOrder) {
+            case 0:
+            case 1:
+                Bundle detailsBundle = new Bundle();
+                detailsBundle.putString(TAG_BUNDLE, movieID);
+                DetailsFragment detailsFragment = new DetailsFragment();
+                detailsFragment.setArguments(detailsBundle);
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.container_fragment_details, detailsFragment)
+                        .commit();
+                break;
+            case 2:
+                Bundle offlineBundle = new Bundle();
+                offlineBundle.putString(TAG_BUNDLE, movieID);
+                OfflineFragment offlineFragment = new OfflineFragment();
+                offlineFragment.setArguments(offlineBundle);
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.container_fragment_details, offlineFragment)
+                        .commit();
+                break;
+        }
+
+
     }
 
 

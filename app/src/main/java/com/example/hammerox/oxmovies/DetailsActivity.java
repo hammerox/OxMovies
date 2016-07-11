@@ -14,7 +14,6 @@ public class DetailsActivity extends AppCompatActivity
                     OfflineFragment.OnFragmentInteractionListener {
 
     public static String movieID;
-    public static String bundleTag = "movieID";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,7 +27,7 @@ public class DetailsActivity extends AppCompatActivity
 
         if (savedInstanceState == null) {
             Bundle args = new Bundle();
-            args.putString(bundleTag, movieID);
+            args.putString(MainActivity.TAG_BUNDLE, movieID);
 
             switch (sortOrder) {
                 case 0:
