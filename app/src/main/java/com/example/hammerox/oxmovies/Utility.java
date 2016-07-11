@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
@@ -52,6 +53,7 @@ public class Utility {
 
     public static final String STRING_SEPARATOR = "###";
     public static final String FOLDER = "/saved_images";
+    public static final int POSTER_RATIO = 278/185;
 
     public static void savePosterImage(ImageView imageView, String movieId){
         Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
@@ -178,6 +180,55 @@ public class Utility {
     public static int getPosterHeight(Display display) {
         int width = getPosterWidth(display);
         return width * 278/185;
+    }
+
+
+    public static Pair<Integer, Integer> getPosterDimension(Context context,
+                                                            Display display, boolean isTwoPane) {
+        int smallest;
+        int largest;
+        int x = 0;
+        int y = 0;
+
+        Point size = new Point();
+        display.getSize(size);
+
+        int orientation = context.getResources().getConfiguration().orientation;
+
+        if (size.x > size.y) {
+            largest = size.x;
+            smallest = size.y;
+        } else {
+            largest = size.y;
+            smallest = size.x;
+        }
+
+        if (isTwoPane) {    // TABLET
+            switch (orientation) {
+                case 1:     // Portrait
+                    x = smallest * 5 / (5 + 7);
+                    y = x * 278/185;
+                    break;
+                case 2:     // Landscape
+                    x = largest * 5 / (5 + 7);
+                    x = x / 4;
+                    y = x * 278/185;
+                    break;
+            }
+        } else {            // PHONE
+            switch (orientation) {
+                case 1:     // Portrait
+                    x = smallest / 2;
+                    y = x * 278/185;
+                    break;
+                case 2:     // Landscape
+                    x = largest / 4;
+                    y = x * 278/185;
+                    break;
+            }
+        }
+
+        return new Pair<>(x, y);
     }
 
 

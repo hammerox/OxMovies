@@ -7,12 +7,30 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class MainActivity extends AppCompatActivity implements ListFragment.OnFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity
+        implements ListFragment.OnFragmentInteractionListener,
+                DetailsFragment.OnFragmentInteractionListener,
+                OfflineFragment.OnFragmentInteractionListener {
+
+    public static final String KEY_TWO_PANE = "twoPane";
+    public static boolean mTwoPane;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        if (findViewById(R.id.container_fragment_details) != null) {
+            mTwoPane = true;
+            if (savedInstanceState == null) {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.container_fragment_details, new OfflineFragment())
+                        .commit();
+            }
+        } else {
+            mTwoPane = false;
+        }
+
     }
 
 

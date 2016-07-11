@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.util.Pair;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -44,6 +45,7 @@ public class ListFragment extends Fragment {
     public static int width = 0;
     public static int height = 0;
 
+    private boolean mTwoPane;
     private int mPosition = -1;
     private final String KEY_POSITION = "position";
 
@@ -64,10 +66,6 @@ public class ListFragment extends Fragment {
         // Inflate the layout for this fragment
 
         View view = inflater.inflate(R.layout.fragment_list, container, false);
-
-        Display display = getActivity().getWindowManager().getDefaultDisplay();
-        width = Utility.getPosterWidth(display);
-        height = Utility.getPosterHeight(display);
 
         gridView = (GridView) view.findViewById(R.id.movielist_gridview);
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -90,6 +88,32 @@ public class ListFragment extends Fragment {
         return view;
     }
 
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        mTwoPane = MainActivity.mTwoPane;
+
+        int orientation = getContext().getResources().getConfiguration().orientation;
+
+        Display display = getActivity().getWindowManager().getDefaultDisplay();
+        Pair<Integer, Integer> dimentions = Utility.getPosterDimension(getContext(), display, mTwoPane);
+        width = dimentions.first;
+        height = dimentions.second;
+
+        switch (orientation) {
+            case 1:     // Portrait
+                if (mTwoPane) {
+                    gridView.setNumColumns(1);
+                } else {
+                    gridView.setNumColumns(2);
+                }
+                break;
+            case 2:     // Landscape
+                gridView.setNumColumns(4);
+                break;
+        }
+    }
 
     @Override
     public void onStart() {
