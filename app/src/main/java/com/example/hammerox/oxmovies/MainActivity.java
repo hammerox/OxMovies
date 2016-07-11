@@ -14,6 +14,7 @@ public class MainActivity extends AppCompatActivity
 
     public static final String KEY_TWO_PANE = "twoPane";
     public static final String TAG_BUNDLE = "movieID";
+    public static final int REQUEST_CODE_SETTINGS = 0;
     public static boolean mTwoPane;
 
     @Override
@@ -49,7 +50,7 @@ public class MainActivity extends AppCompatActivity
         switch (id) {
             case R.id.action_settings:
                 Intent intent = new Intent(this, SettingsActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent, REQUEST_CODE_SETTINGS);
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -80,12 +81,31 @@ public class MainActivity extends AppCompatActivity
                 break;
         }
 
+    }
 
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Check which request we're responding to
+        if (requestCode == REQUEST_CODE_SETTINGS) {
+            if (resultCode == RESULT_OK) {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.container_fragment_list, new ListFragment())
+                        .commitAllowingStateLoss();
+            }
+        }
     }
 
 
     @Override
     public void onFragmentInteraction(Uri uri) {
 
+    }
+
+
+    @Override
+    public void setActionBarTitle(int sortOrder) {
+        String[] title = getResources().getStringArray(R.array.pref_sort_order);
+        getSupportActionBar().setTitle(title[sortOrder]);
     }
 }

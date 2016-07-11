@@ -1,6 +1,7 @@
 package com.example.hammerox.oxmovies;
 
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
@@ -62,6 +63,9 @@ public class SettingsActivity extends PreferenceActivity
             // For other preferences, set the summary to the value's simple string representation.
             preference.setSummary(stringValue);
         }
+
+        setResult(Activity.RESULT_OK);
+
         return true;
     }
 

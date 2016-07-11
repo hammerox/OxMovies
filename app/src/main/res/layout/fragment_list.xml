@@ -15,6 +15,16 @@
         android:gravity="center"
         android:visibility="gone"/>
 
+    <TextView
+        android:id="@+id/movielist_nointernet_text"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="No connection with internet"
+        android:textStyle="bold"
+        android:textColor="@color/colorGrayExtraLight"
+        android:gravity="center"
+        android:visibility="gone"/>
+
     <ProgressBar
         android:id="@+id/movielist_load_icon"
         android:layout_width="wrap_content"

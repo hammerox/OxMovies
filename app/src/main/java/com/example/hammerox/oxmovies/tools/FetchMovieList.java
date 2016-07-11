@@ -4,8 +4,12 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.view.View;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.example.hammerox.oxmovies.ListFragment;
+import com.example.hammerox.oxmovies.R;
 import com.example.hammerox.oxmovies.Utility;
 
 import org.json.JSONArray;
@@ -16,9 +20,11 @@ import org.json.JSONObject;
 public class FetchMovieList extends AsyncTask<Integer, Void, String> {
 
     private Context mContext;
+    private View layoutView;
 
-    public FetchMovieList(Context context) {
+    public FetchMovieList(Context context, View view) {
         mContext = context;
+        layoutView = view;
     }
 
     @Override
@@ -66,6 +72,11 @@ public class FetchMovieList extends AsyncTask<Integer, Void, String> {
             } catch (NullPointerException e) {
                 Log.e("NullPointerException", e.toString());
             }
+        } else {
+            TextView noInternetText = (TextView) layoutView.findViewById(R.id.movielist_nointernet_text);
+            ProgressBar loadIcon = (ProgressBar) layoutView.findViewById(R.id.movielist_load_icon);
+            noInternetText.setVisibility(View.VISIBLE);
+            loadIcon.setVisibility(View.GONE);
         }
 
     }

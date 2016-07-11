@@ -8,6 +8,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.util.Pair;
+import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -120,16 +121,14 @@ public class ListFragment extends Fragment {
         }
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        updateGridContent();
-    }
-
 
     @Override
     public void onResume() {
         super.onResume();
+
+        updateGridContent();
+        mListener.setActionBarTitle(sortOrder);
+
         if (mPosition != -1) {
             gridView.post(new Runnable() {
                 @Override
@@ -191,6 +190,7 @@ public class ListFragment extends Fragment {
 
     public interface OnFragmentInteractionListener {
         void changeDetails(String movieID, int sortOrder);
+        void setActionBarTitle(int sortOrder);
     }
 
 
@@ -200,7 +200,7 @@ public class ListFragment extends Fragment {
         switch (sortOrder) {
             case 0:
             case 1:
-                new FetchMovieList(getContext()).execute(sortOrder);
+                new FetchMovieList(getContext(), getView()).execute(sortOrder);
                 break;
             case 2:
                 getFavouriteGrid();
@@ -244,6 +244,7 @@ public class ListFragment extends Fragment {
                     IDList.add(movieId);
                 }
 
+                loadIcon.setVisibility(View.GONE);
                 noListText.setVisibility(View.GONE);
                 imageAdapter = new ImageAdapter(getContext());
                 gridView.setAdapter(imageAdapter);

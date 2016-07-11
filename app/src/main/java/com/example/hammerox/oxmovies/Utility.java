@@ -19,6 +19,7 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -292,8 +293,6 @@ public class Utility {
 
         } catch (IOException e) {
             Log.e("PlaceholderFragment", "Error ", e);
-            // If the code didn't successfully get the weather data, there's no point in attemping
-            // to parse it.
             return null;
         } finally{
             if (urlConnection != null) {

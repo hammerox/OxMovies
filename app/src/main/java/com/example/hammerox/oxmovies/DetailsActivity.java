@@ -6,7 +6,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.View;
 
 
 public class DetailsActivity extends AppCompatActivity
@@ -58,11 +57,6 @@ public class DetailsActivity extends AppCompatActivity
                 return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-
-    public void favourite(View v) {
-        Utility.setFavourite(DetailsActivity.this, this, DetailsFragment.movie, v);
     }
 
 

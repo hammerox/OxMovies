@@ -17,7 +17,6 @@ import android.widget.TextView;
 
 import com.example.hammerox.oxmovies.data.Movie;
 import com.example.hammerox.oxmovies.data.MovieDatabase;
-import com.example.hammerox.oxmovies.tools.FetchMovieDetails;
 import com.yahoo.squidb.data.SquidCursor;
 import com.yahoo.squidb.sql.Query;
 
@@ -32,7 +31,7 @@ public class OfflineFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    String movieID;
+    private static String movieID;
     private static Movie movie = new Movie();
 
     private int width = 0;
@@ -111,7 +110,6 @@ public class OfflineFragment extends Fragment {
                 cursor.close();
             }
         }
-
 
         return view;
     }
