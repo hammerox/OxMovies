@@ -1,7 +1,6 @@
 package com.example.hammerox.oxmovies;
 
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -21,11 +20,9 @@ import com.example.hammerox.oxmovies.data.MovieDatabase;
 import com.yahoo.squidb.data.SquidCursor;
 import com.yahoo.squidb.sql.Query;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -34,7 +31,7 @@ public class OfflineFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
 
     String movieID;
-    private Movie movie = new Movie();
+    private static Movie movie = new Movie();
 
     private int width = 0;
     private int height = 0;
@@ -82,10 +79,16 @@ public class OfflineFragment extends Fragment {
                     titleView.setText(movie.getTitle());
                     posterView.setImageBitmap(Utility.loadPosterImage(movieID));
                     synopsysView.setText(movie.getSynopsys());
-                    favouriteView.setChecked(Utility.isFavourite(getContext(), movieID));
-                    favouriteView.setVisibility(View.VISIBLE);
                     ratingView.setText(movie.getRating().toString());
                     releaseDateView.setText(movie.getReleaseDate());
+                    favouriteView.setChecked(Utility.isFavourite(getContext(), movieID));
+                    favouriteView.setVisibility(View.VISIBLE);
+                    favouriteView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Utility.setFavourite(getContext(), getActivity(), OfflineFragment.movie, v);
+                        }
+                    });
 
                     // Set up trailers
                     JSONObject trailersJSON = new JSONObject(movie.getTrailersJson());

@@ -79,8 +79,14 @@ public class FetchMovieDetails extends AsyncTask<String, Void, String> {
             synopsysView.setText(synopsys);
             ratingView.setText(rating);
             releaseDateView.setText(releaseDate);
+            favouriteView.setChecked(Utility.isFavourite(mContext, DetailsFragment.movieID));
             favouriteView.setVisibility(View.VISIBLE);
-            favouriteView.setChecked(Utility.isFavourite(mContext, DetailsActivity.movieID));
+            favouriteView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Utility.setFavourite(mContext, mActivity, DetailsFragment.movie, v);
+                }
+            });
 
             // Set up trailers
             Utility.setTrailerView(mContext, trailersJSON, DetailsFragment.trailerList, trailersView);

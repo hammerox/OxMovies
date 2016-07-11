@@ -13,7 +13,6 @@ public class DetailsActivity extends AppCompatActivity
         implements DetailsFragment.OnFragmentInteractionListener,
                     OfflineFragment.OnFragmentInteractionListener {
 
-    public static String movieID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,7 +21,7 @@ public class DetailsActivity extends AppCompatActivity
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        movieID = getIntent().getStringExtra(Intent.EXTRA_TEXT);
+        String movieID = getIntent().getStringExtra(Intent.EXTRA_TEXT);
         int sortOrder = getIntent().getIntExtra(Intent.EXTRA_DOCK_STATE, 0);
 
         if (savedInstanceState == null) {
