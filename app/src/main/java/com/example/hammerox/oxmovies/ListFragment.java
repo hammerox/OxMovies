@@ -44,6 +44,9 @@ public class ListFragment extends Fragment {
     public static int width = 0;
     public static int height = 0;
 
+    private int mPosition = -1;
+    private final String KEY_POSITION = "position";
+
     public ListFragment() {
         // Required empty public constructor
     }
@@ -70,6 +73,8 @@ public class ListFragment extends Fragment {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                mPosition = position;
+
                 Intent intent;
                 intent = new Intent(getContext(), DetailsActivity.class);
                 intent.putExtra(Intent.EXTRA_TEXT, IDList.get(position));
@@ -77,6 +82,10 @@ public class ListFragment extends Fragment {
                 startActivity(intent);
             }
         });
+
+        if (savedInstanceState != null && savedInstanceState.containsKey(KEY_POSITION)) {
+            mPosition = savedInstanceState.getInt(KEY_POSITION);
+        }
 
         return view;
     }
@@ -86,6 +95,20 @@ public class ListFragment extends Fragment {
     public void onStart() {
         super.onStart();
         updateGridContent();
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mPosition != -1) {
+            gridView.post(new Runnable() {
+                @Override
+                public void run() {
+                    gridView.setSelection(mPosition);
+                }
+            });
+        }
     }
 
 
@@ -110,12 +133,13 @@ public class ListFragment extends Fragment {
     }
 
 
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        if (mPosition != -1) {
+            outState.putInt(KEY_POSITION, mPosition);
         }
+        super.onSaveInstanceState(outState);
     }
-
 
     @Override
     public void onAttach(Context context) {
