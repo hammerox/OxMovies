@@ -15,6 +15,7 @@ import android.support.v4.util.Pair;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ImageView;
@@ -28,6 +29,10 @@ import com.yahoo.squidb.data.SquidCursor;
 import com.yahoo.squidb.sql.Criterion;
 import com.yahoo.squidb.sql.Query;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -38,6 +43,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Utility {
@@ -405,6 +411,77 @@ public class Utility {
                 .appendQueryParameter("api_key", API_KEY);
 
         return builder.build().toString();
+    }
+
+
+    public static void setTrailerView(Context context,
+                                      JSONObject trailersJSON,
+                                      List<Pair<String, String>> trailerList,
+                                      LinearLayout trailersView) {
+        try {
+            LayoutInflater inflater = LayoutInflater.from(context);
+            JSONArray allTrailers = trailersJSON.getJSONArray("results");
+
+            int trailersCount = allTrailers.length();
+            if (trailersCount > 0) {
+
+                trailerList = new ArrayList<>();
+
+                for (int i = 0; i < trailersCount; i++) {
+                    JSONObject trailerObject = allTrailers.getJSONObject(i);
+                    String trailerTitle = trailerObject.getString("name");
+                    String trailerKey = trailerObject.getString("key");
+                    Pair<String, String> trailerPair = new Pair<>(trailerTitle, trailerKey);
+                    trailerList.add(trailerPair);
+
+                    View custom = inflater.inflate(R.layout.item_trailer, null);
+
+                    TextView trailerTitleView = (TextView) custom.findViewById(R.id.item_trailer_title);
+                    trailerTitleView.setText(trailerTitle);
+
+                    trailersView.addView(custom);
+                }
+            } else {
+                View custom = inflater.inflate(R.layout.item_trailer_empty, null);
+                trailersView.addView(custom);
+            }
+        } catch (JSONException e) {
+
+        }
+    }
+
+
+    public static void setReviewsView(Context context,
+                                      JSONObject reviewsJSON,
+                                      LinearLayout reviewsView) {
+        try {
+            LayoutInflater inflater = LayoutInflater.from(context);
+            JSONArray allReviews = reviewsJSON.getJSONArray("results");
+
+            int reviewsCount = allReviews.length();
+            if (reviewsCount > 0) {
+                for (int i = 0; i < reviewsCount; i++) {
+                    JSONObject reviewObject = allReviews.getJSONObject(i);
+                    String reviewAuthor = reviewObject.getString("author");
+                    String reviewComment = reviewObject.getString("content");
+
+                    View custom = inflater.inflate(R.layout.item_review, null);
+
+                    TextView reviewAuthorView = (TextView) custom.findViewById(R.id.item_review_author);
+                    reviewAuthorView.setText(reviewAuthor);
+
+                    TextView reviewCommentView = (TextView) custom.findViewById(R.id.item_review_comment);
+                    reviewCommentView.setText(reviewComment);
+
+                    reviewsView.addView(custom);
+                }
+            } else {
+                View custom = inflater.inflate(R.layout.item_review_empty, null);
+                reviewsView.addView(custom);
+            }
+        } catch (JSONException e) {
+
+        }
     }
 
 }

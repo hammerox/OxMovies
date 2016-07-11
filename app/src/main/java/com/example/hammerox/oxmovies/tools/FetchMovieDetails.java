@@ -83,56 +83,10 @@ public class FetchMovieDetails extends AsyncTask<String, Void, String> {
             favouriteView.setChecked(Utility.isFavourite(mContext, DetailsActivity.movieID));
 
             // Set up trailers
-            JSONArray allTrailers = trailersJSON.getJSONArray("results");
-
-            int trailersCount = allTrailers.length();
-            if (trailersCount > 0) {
-
-                DetailsFragment.trailerList = new ArrayList<>();
-
-                for (int i = 0; i < trailersCount; i++) {
-                    JSONObject trailerObject = allTrailers.getJSONObject(i);
-                    String trailerTitle = trailerObject.getString("name");
-                    String trailerKey = trailerObject.getString("key");
-                    Pair<String, String> trailerPair = new Pair<>(trailerTitle, trailerKey);
-                    DetailsFragment.trailerList.add(trailerPair);
-
-                    View custom = inflater.inflate(R.layout.item_trailer, null);
-
-                    TextView trailerTitleView = (TextView) custom.findViewById(R.id.item_trailer_title);
-                    trailerTitleView.setText(trailerTitle);
-
-                    trailersView.addView(custom);
-                }
-            } else {
-                View custom = inflater.inflate(R.layout.item_trailer_empty, null);
-                trailersView.addView(custom);
-            }
+            Utility.setTrailerView(mContext, trailersJSON, DetailsFragment.trailerList, trailersView);
 
             // Set up reviews
-            JSONArray allReviews = reviewsJSON.getJSONArray("results");
-
-            int reviewsCount = allReviews.length();
-            if (reviewsCount > 0) {
-                for (int i = 0; i < reviewsCount; i++) {
-                    JSONObject reviewObject = allReviews.getJSONObject(i);
-                    String reviewAuthor = reviewObject.getString("author");
-                    String reviewComment = reviewObject.getString("content");
-
-                    View custom = inflater.inflate(R.layout.item_review, null);
-
-                    TextView reviewAuthorView = (TextView) custom.findViewById(R.id.item_review_author);
-                    reviewAuthorView.setText(reviewAuthor);
-
-                    TextView reviewCommentView = (TextView) custom.findViewById(R.id.item_review_comment);
-                    reviewCommentView.setText(reviewComment);
-
-                    reviewsView.addView(custom);
-                }
-            } else {
-                View custom = inflater.inflate(R.layout.item_review_empty, null);
-                reviewsView.addView(custom);
-            }
+            Utility.setReviewsView(mContext, reviewsJSON, reviewsView);
 
             // Set up Movie object
             DetailsFragment.movie.setTitle(title);

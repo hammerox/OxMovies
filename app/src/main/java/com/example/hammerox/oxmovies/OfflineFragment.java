@@ -88,58 +88,11 @@ public class OfflineFragment extends Fragment {
 
                 // Set up trailers
                 JSONObject trailersJSON = new JSONObject(movie.getTrailersJson());
-                JSONArray allTrailers = trailersJSON.getJSONArray("results");
-
-                int trailersCount = allTrailers.length();
-                if (trailersCount > 0) {
-
-                    trailerList = new ArrayList<>();
-
-                    for (int i = 0; i < trailersCount; i++) {
-                        JSONObject trailerObject = allTrailers.getJSONObject(i);
-                        String trailerTitle = trailerObject.getString("name");
-                        String trailerKey = trailerObject.getString("key");
-                        Pair<String, String> trailerPair = new Pair<>(trailerTitle, trailerKey);
-                        trailerList.add(trailerPair);
-
-                        View custom = inflater.inflate(R.layout.item_trailer, null);
-
-                        TextView trailerTitleView = (TextView) custom.findViewById(R.id.item_trailer_title);
-                        trailerTitleView.setText(trailerTitle);
-
-                        trailersView.addView(custom);
-                    }
-                } else {
-                    View custom = inflater.inflate(R.layout.item_trailer_empty, null);
-                    trailersView.addView(custom);
-                }
+                Utility.setTrailerView(getContext(), trailersJSON, trailerList, trailersView);
 
                 // Set up reviews
                 JSONObject reviewsJSON = new JSONObject(movie.getReviewsJson());
-                JSONArray allReviews = reviewsJSON.getJSONArray("results");
-
-                int reviewsCount = allReviews.length();
-                if (reviewsCount > 0) {
-                    for (int i = 0; i < reviewsCount; i++) {
-                        JSONObject reviewObject = allReviews.getJSONObject(i);
-                        String reviewAuthor = reviewObject.getString("author");
-                        String reviewComment = reviewObject.getString("content");
-
-                        View custom = inflater.inflate(R.layout.item_review, null);
-
-                        TextView reviewAuthorView = (TextView) custom.findViewById(R.id.item_review_author);
-                        reviewAuthorView.setText(reviewAuthor);
-
-                        TextView reviewCommentView = (TextView) custom.findViewById(R.id.item_review_comment);
-                        reviewCommentView.setText(reviewComment);
-
-                        reviewsView.addView(custom);
-                    }
-                } else {
-                    View custom = inflater.inflate(R.layout.item_review_empty, null);
-                    reviewsView.addView(custom);
-                }
-
+                Utility.setReviewsView(getContext(), reviewsJSON, reviewsView);
             }
 
         } catch (JSONException e) {
