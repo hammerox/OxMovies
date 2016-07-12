@@ -10,6 +10,7 @@ To use the app on your own, you will need to:
 - Create an account on https://www.themoviedb.org;
 - Request an API key;
 - Within Utility class, replace "YOUR_API_KEY_HERE" with your own API key;
+- Rebuild project if it cannot resolve Movie class. Code generator will do its work by creating it.
 - Run.
 
 
