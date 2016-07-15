@@ -8,7 +8,6 @@ import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.util.Pair;
-import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -60,6 +59,8 @@ public class ListFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+
+        clearLists();
     }
 
     @Override
@@ -126,7 +127,10 @@ public class ListFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
-        updateGridContent();
+        if (IDList.size() == 0) {
+            updateGridContent();
+        }
+
         mListener.setActionBarTitle(sortOrder);
 
         if (mPosition != -1) {
