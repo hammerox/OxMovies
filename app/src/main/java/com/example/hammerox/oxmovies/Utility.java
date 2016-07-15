@@ -19,7 +19,6 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,7 +50,12 @@ public class Utility {
 
     public static final String STRING_SEPARATOR = "###";
     public static final String FOLDER = "/saved_images";
-    public static final int POSTER_RATIO = 278/185;
+    public static final double POSTER_RATIO;
+
+    static {
+        POSTER_RATIO = 278.0/185.0;
+    }
+
 
     public static void savePosterImage(ImageView imageView, String movieId){
         Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
@@ -166,7 +170,7 @@ public class Utility {
 
     public static int getPosterHeight(Display display) {
         int width = getPosterWidth(display);
-        return width * 278/185;
+        return (int) Math.round(width * POSTER_RATIO);
     }
 
 
@@ -194,23 +198,23 @@ public class Utility {
             switch (orientation) {
                 case 1:     // Portrait
                     x = smallest * 5 / (5 + 7);
-                    y = x * 278/185;
+                    y = (int) Math.round(x * POSTER_RATIO);
                     break;
                 case 2:     // Landscape
                     x = largest * 5 / (5 + 7);
                     x = x / 4;
-                    y = x * 278/185;
+                    y = (int) Math.round(x * POSTER_RATIO);
                     break;
             }
         } else {            // PHONE
             switch (orientation) {
                 case 1:     // Portrait
                     x = smallest / 2;
-                    y = x * 278/185;
+                    y = (int) Math.round(x * POSTER_RATIO);
                     break;
                 case 2:     // Landscape
                     x = largest / 4;
-                    y = x * 278/185;
+                    y = (int) Math.round(x * POSTER_RATIO);
                     break;
             }
         }
